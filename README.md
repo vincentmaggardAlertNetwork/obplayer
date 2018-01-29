@@ -22,6 +22,7 @@ OBPlayer can be run in a variety of configurations:
 + LIVE Assist with Mobile HTML5 Touch Screen interface
 + GTK desktop application for a Digital Video Screen.
 + Standalone Emergency Alerting CAP Player supporting audio, image and video
++ Coming Soon Support For IPAWS CAP Profile Version 1.0
 
 OpenBroadcaster Player
 http://www.openbroadcaster.com/
