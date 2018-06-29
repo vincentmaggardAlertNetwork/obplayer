@@ -482,6 +482,10 @@ class ObAlertProcessor (object):
 
                                     start_time = self.ctrl.get_requests_endtime()
                                     if alert.times_played <= 1:
+                                        #TODO Remove this and add it's settings to the config system.
+                                        if os.path.isfile("obplayer/alerts/data/ledin_message.ogg"):
+                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "ledin_message.ogg"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
+                                        self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
                                         self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
                                     self.ctrl.add_request(**alert_media['primary']['audio'])
                                     if 'visual' in alert_media['primary']:
@@ -522,5 +526,4 @@ class ObAlertProcessor (object):
             except:
                 obplayer.Log.log("exception in " + self.thread.name + " thread", 'error')
                 obplayer.Log.log(traceback.format_exc(), 'error')
-
 
