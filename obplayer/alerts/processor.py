@@ -53,6 +53,7 @@ class ObAlertFetcher (obplayer.ObThread):
         self.receiving_data = False
         self.last_received = 0
         self.close_lock = threading.Lock()
+        self.fetcher_timeouts = 0
 
     def close(self):
         with self.close_lock:
@@ -484,6 +485,11 @@ class ObAlertProcessor (object):
                                     if alert.times_played <= 1:
                                         #TODO Remove this and add it's settings to the config system.
                                         if os.path.isfile("obplayer/alerts/data/ledin_message.ogg"):
+                                            d = GstPbutils.Discoverer()
+                                            mediainfo = d.discover_uri("obplayer/alerts/data/ledin_message.ogg")                         if mediainfo.get_duration() / float(Gst.SECOND) > 10.0:
+                                               obplayer.Log.log('alert start message is longer then 10 seconds! max allowed is 10 seconds.')
+                                               
+                                            
                                             self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "ledin_message.ogg"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
                                         self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
                                         self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
@@ -520,9 +526,14 @@ class ObAlertProcessor (object):
 
                 # reset fetcher if we stop receiving heartbeats
                 if self.fetcher.last_received and time.time() - self.fetcher.last_received > 360:
-                    obplayer.Log.log("no heartbeat received for 6 min. resetting alert fetcher.", 'error')
+                    obplayer.Log.log("no heartbeat received for 6 min. resetting alert fetcher", 'error')
+                    self.fetcher_timeouts =+ 1
                     # Play beep after no heartbeats for 6 minutes.
-                    os.system("play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880")
+                    if self.fetcher_timeouts > 10:
+                        os.system("play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880")
+                        # resetting timeouts count.
+                        obplayer.Log.log("no heartbeat received timedout. alerting user!", 'error')
+                        self.fetcher_timeouts = 0
                     self.fetcher.close()
 
             except:
