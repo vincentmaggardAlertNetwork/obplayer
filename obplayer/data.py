@@ -403,6 +403,8 @@ class ObConfigData (ObData):
         self.add_setting('live_assist_monitor_jack_name', '', 'text')
 
         self.add_setting('alerts_enable', '0', 'bool')
+        self.add_setting('alerts_play_leadin_enable', '0', 'bool')
+        self.add_setting('alerts_alert_start_audio', self.datadir + '/media' + 'alert_start.wav', 'text')
         self.add_setting('alerts_language_primary', 'english', 'text')
         self.add_setting('alerts_language_secondary', 'french', 'text')
         self.add_setting('alerts_voice_primary', 'en', 'text')
@@ -476,5 +478,3 @@ class ObConfigData (ObData):
             if not hidepasswords or not name.endswith('_password'):
                 result[name] = value
         return result
-
-
