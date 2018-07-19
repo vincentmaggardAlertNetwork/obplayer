@@ -4,6 +4,7 @@ Alerts Tab
   Emergency Alerts: Emergency Alerts
 
   alerts_enable: Enable Emergency Alerts
+  alerts_play_leadin_enable: Enable Alert Leadin Message
   alerts_geocode: Location Geocode
   alerts_geocode_tooltip: A comma-separated list of partial geocodes.  The first part of an alert's geocode must match one of the partial geocodes in this list for the alert to be active.  See http://www.statcan.gc.ca/eng/subjects/standard/sgc/geography for a list of Canadian geocodes.
   alerts_geocode_invalid: Geocodes must be specified as a list of comma-separated numbers.
@@ -46,6 +47,9 @@ Alerts Tab
 
   alerts_play_tests: Play Test Alerts
   alerts_play_tests_tooltip: Include alerts that are marked as a test.  These are not scheduled tests of the alert system, but internal system tests which are not normally played to the public.
+
+  alerts_play_ledin: Play Ledin Message
+  alerts_play_ledin_tooltip: Play a message at the start of the broadcast of a alert ready message.
 
   alerts_leadin_delay: Lead-In Delay (in seconds)
   alerts_leadin_delay_tooltip: The time in seconds of silence after an alert cycle has started but before the first alert audio is played.
@@ -96,4 +100,3 @@ Alerts Tab
   Times Played: Times Played
   Headline: Headline
   Description: Description
-
