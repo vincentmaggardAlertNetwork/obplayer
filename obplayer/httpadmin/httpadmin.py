@@ -39,6 +39,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
     def __init__(self):
         self.root = 'obplayer/httpadmin/http'
 
+        print(obplayer.Config)
         self.username = obplayer.Config.setting('http_admin_username')
         self.password = obplayer.Config.setting('http_admin_password')
         self.readonly_username = obplayer.Config.setting('http_readonly_username')
@@ -105,6 +106,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         self.route('/pulse/volume', self.req_pulse_volume, 'admin')
         self.route('/pulse/mute', self.req_pulse_mute, 'admin')
         self.route('/pulse/select', self.req_pulse_select, 'admin')
+        self.route('/import_leadin_audio', self.req_import_leadin_audio, 'admin')
 
     def req_status_info(self, request):
         proc = subprocess.Popen([ "uptime", "-p" ], stdout=subprocess.PIPE)
@@ -217,6 +219,27 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         obplayer.Config.save_settings(settings)
         return { 'status' : True, 'notice' : "settings-imported-success" }
 
+    def req_import_leadin_audio(self, request):
+        content = request.args.getvalue('file')
+        file_type = request.args.getvalue('leadin_audio_file_type')
+
+        errors = ''
+
+        if file_type == '.wav' or file_type == '.ogg' or file_type == '.mp3' and content != None:
+            audio_path = os.path.join(obplayer.ObData.get_datadir(), 'media', 'L', 'leadin_message' + file_type)
+            if os.path.exists(os.path.join(obplayer.ObData.get_datadir(), 'media', 'L')) == False:
+                os.mkdir(os.path.join(obplayer.ObData.get_datadir(), 'media', 'L'))
+            file = open(audio_path, 'wb')
+            file.write(content)
+            file.close()
+
+            obplayer.Config.save_settings({'alerts_alert_start_audio': audio_path})
+
+            obplayer.Log.log("importing audio file {0}".format(audio_path), 'config')
+            return { 'status' : True, 'notice' : "settings-imported-leadin-audio" }
+        else:
+            return { 'status' : False, 'error' : errors }
+
     def req_export(self, request):
         settings = ''
         for (name, value) in sorted(obplayer.Config.list_settings(hidepasswords=True).items()):
@@ -320,4 +343,3 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
                                     namespace = name
                                     strings[namespace] = { }
         return strings
-
