@@ -404,7 +404,7 @@ class ObConfigData (ObData):
 
         self.add_setting('alerts_enable', '0', 'bool')
         self.add_setting('alerts_play_leadin_enable', '0', 'bool')
-        self.add_setting('alerts_alert_start_audio', self.datadir + '/media' + 'alert_start.wav', 'text')
+        self.add_setting('alerts_alert_start_audio', self.datadir + '/media/' + 'L/' + 'leadin_message.mp3', 'text')
         self.add_setting('alerts_language_primary', 'english', 'text')
         self.add_setting('alerts_language_secondary', 'french', 'text')
         self.add_setting('alerts_voice_primary', 'en', 'text')
