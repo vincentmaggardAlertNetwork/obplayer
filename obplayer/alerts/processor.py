@@ -35,12 +35,16 @@ import os.path
 import requests
 import threading
 
+import gi
+gi.require_version('Gst', '1.0')
+gi.require_version('GstPbutils', '1.0')
+from gi.repository import GObject, Gst, GstPbutils
+
 
 if sys.version.startswith('3'):
     import urllib.parse as urlparse
 else:
     import urlparse
-
 
 class ObAlertFetcher (obplayer.ObThread):
     def __init__(self, processor):
@@ -483,14 +487,15 @@ class ObAlertProcessor (object):
 
                                     start_time = self.ctrl.get_requests_endtime()
                                     if alert.times_played <= 1:
-                                        #TODO Remove this and add it's settings to the config system.
-                                        if os.path.isfile("obplayer/alerts/data/ledin_message.ogg"):
+                                        if os.path.isfile(obplayer.Config.setting('alerts_alert_start_audio')) and obplayer.Config.setting('alerts_play_leadin_enable') == True:
                                             d = GstPbutils.Discoverer()
-                                            mediainfo = d.discover_uri("obplayer/alerts/data/ledin_message.ogg")                         if mediainfo.get_duration() / float(Gst.SECOND) > 10.0:
-                                               obplayer.Log.log('alert start message is longer then 10 seconds! max allowed is 10 seconds.')
-                                               
-                                            
-                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "ledin_message.ogg"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
+                                            mediainfo = d.discover_uri(obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')))
+                                            print('leadin message duration ' + str(mediainfo.get_duration() / float(Gst.SECOND)))
+                                            if mediainfo.get_duration() / float(Gst.SECOND) > 10.0:
+                                                obplayer.Log.log('alert start message is longer then 10 seconds! max allowed is 10 seconds. only playing the first 10 seconds.', 'alerts')
+                                                self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=10, artist=alert_media['primary']['audio']['artist'], title='ledin message', overlay_text=alert_media['primary']['audio']['overlay_text'])
+                                            else:
+                                                self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=mediainfo.get_duration() / float(Gst.SECOND), artist=alert_media['primary']['audio']['artist'], title='ledin message', overlay_text=alert_media['primary']['audio']['overlay_text'])
                                         self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
                                         self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
                                     self.ctrl.add_request(**alert_media['primary']['audio'])
@@ -539,4 +544,3 @@ class ObAlertProcessor (object):
             except:
                 obplayer.Log.log("exception in " + self.thread.name + " thread", 'error')
                 obplayer.Log.log(traceback.format_exc(), 'error')
-
