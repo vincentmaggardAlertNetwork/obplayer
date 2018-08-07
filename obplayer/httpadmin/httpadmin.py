@@ -220,7 +220,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         return { 'status' : True, 'notice' : "settings-imported-success" }
 
     def req_import_leadin_audio(self, request):
-        content = request.args.getvalue('file')
+        content = request.args.getvalue('leadin_audio_file')
         file_type = request.args.getvalue('leadin_audio_file_type')
 
         errors = ''
