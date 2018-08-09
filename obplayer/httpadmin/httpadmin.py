@@ -81,6 +81,10 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         else:
             return ''
 
+    def get_icecast_bitrate_text(self):
+        if obplayer.Config.setting('streamer_icecast_bitrate', '0') == 0: return "Variable"
+        else: return str(obplayer.Config.setting('streamer_icecast_bitrate', '0')) + ' kbps'
+
     def fullscreen_status(self):
         if obplayer.Config.headless:
             return 'N/A'
