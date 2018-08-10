@@ -1247,7 +1247,12 @@
             <tr>
               <td data-t>streamer_icecast_bitrate</td>
               <td><select name="streamer_icecast_bitrate">
-                  <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %>><%= obplayer.HTTPAdmin.get_icecast_bitrate_text() %></option>
+                <% if obplayer.Config.setting('streamer_icecast_bitrate', '0') == 0: %>
+                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %>>Variable</option>
+                <% end %>
+                <% if obplayer.Config.setting('streamer_icecast_bitrate', '0') != 0: %>
+                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %>><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %> kbps</option>
+                <% end %>
                   <option value="0"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','0') %>>Variable</option>
                   <option value="8"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','8') %>>8 kbps</option>
                   <option value="16"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','16') %>>16 kbps</option>
