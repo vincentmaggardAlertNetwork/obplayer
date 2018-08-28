@@ -52,6 +52,20 @@
         </table>
       </div>
 
+      <div class="column">
+        <h2><span data-t>Off-air Audio Logs</h2>
+
+        <table>
+          <% basedir = obplayer.ObData.get_datadir() + "/offair-audiologs" %>
+          <% for filename in sorted(os.listdir(basedir), reverse=True): %>
+          <tr>
+            <td><a href="/audiologs/<%= urlencode(filename) %>"><%= filename %></a></td>
+            <td class="filesize"><%= format_size(os.path.getsize(os.path.join(basedir, filename))) %></td>
+          </tr>
+          <% end %>
+        </table>
+      </div>
+
     </div>
 
     <p style="font-size: 0.9em; padding-top: 1em;" data-tns="Footer">
