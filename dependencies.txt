@@ -33,7 +33,7 @@ Dependencies are Debian/Ubuntu package names.
 - gstreamer1.0-plugins-ugly
 
 - ubuntu-restricted-addons
-- ubuntu-restricted-extras 
+- ubuntu-restricted-extras
 
 
 Recommended if using for CATV:
@@ -67,4 +67,6 @@ Include if using PulseAudio:
 
 - pip3 install pulsectl         (Note: pkg not included in apt-get; must be installed using pip3)
 
+Include if using Off-air audio log:
 
+- pip3 install pyrtlsdr         (Note: pkg not included in apt-get; must be installed using pip3)
