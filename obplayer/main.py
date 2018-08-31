@@ -57,6 +57,7 @@ class ObMainApp:
         obplayer.Log.set_debug(self.args.debug)
 
         obplayer.Config = obplayer.ObConfigData()
+
         obplayer.Config.args = self.args
 
         if self.args.headless is True:
@@ -98,6 +99,7 @@ class ObMainApp:
                 self.load_module('liveassist')
             if obplayer.Config.setting('audiolog_enable'):
                 self.load_module('audiolog')
+                self.load_module('offair_audiolog')
             if obplayer.Config.setting('streamer_enable'):
                 self.load_module('streamer')
 
@@ -174,4 +176,3 @@ class ObMainApp:
     def quit_modules(self):
         for name in self.modules:
             exec('obplayer.%s.quit()' % (name,))
-
