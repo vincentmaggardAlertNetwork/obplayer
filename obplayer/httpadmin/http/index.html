@@ -367,10 +367,22 @@
 	    <td data-t>audiolog_enable</td>
 	    <td><%= obplayer.Config.setting('audiolog_enable') %></td>
 	  </tr>
+    <tr>
+      <td data-t>offair_audiolog_enable</td>
+      <td><%= obplayer.Config.setting('offair_audiolog_enable') %></td>
+    </tr>
 	  <tr>
 	    <td data-t>audiolog_purge_files</td>
 	    <td><%= obplayer.Config.setting('audiolog_purge_files') %></td>
 	  </tr>
+    <tr>
+      <td data-t>audiolog_bitrate</td>
+      <td><%= obplayer.Config.setting('audiolog_bitrate') %></td>
+    </tr>
+    <tr>
+      <td data-t>audiolog_bitrate</td>
+      <td><%= obplayer.Config.setting('audiolog_bitrate') %></td>
+    </tr>
 
 	  <tr class="padding">
 	    <td data-t>video_out_enable</td>
@@ -1105,6 +1117,217 @@
             <tr>
               <td data-t>audiolog_enable</td>
               <td><input type="checkbox" id="audiolog_enable" name="audiolog_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('audiolog_enable') %>></td>
+            </tr>
+            <tr>
+              <td data-t>offair_audiolog_enable</td>
+              <td><input type="checkbox" id="offair_audiolog_enable" name="offair_audiolog_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('offair_audiolog_enable') %>></td>
+            </tr>
+            <tr>
+              <td data-t>offair_audiolog_feq</td>
+              <td>
+                <select id="offair_audiolog_feq" name="offair_audiolog_feq" data-tns="offair_audiolog_feq">
+                    <option value="88.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.0') %> data-t>88.0</option>
+                    <option value="88.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.1') %> data-t>88.1</option>
+                    <option value="88.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.2') %> data-t>88.2</option>
+                    <option value="88.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.3') %> data-t>88.3</option>
+                    <option value="88.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.4') %> data-t>88.4</option>
+                    <option value="88.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.5') %> data-t>88.5</option>
+                    <option value="88.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.6') %> data-t>88.6</option>
+                    <option value="88.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.7') %> data-t>88.7</option>
+                    <option value="88.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.8') %> data-t>88.8</option>
+                    <option value="88.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','88.9') %> data-t>88.9</option>
+                    <option value="89.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.0') %> data-t>89.0</option>
+                    <option value="89.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.1') %> data-t>89.1</option>
+                    <option value="89.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.2') %> data-t>89.2</option>
+                    <option value="89.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.3') %> data-t>89.3</option>
+                    <option value="89.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.4') %> data-t>89.4</option>
+                    <option value="89.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.5') %> data-t>89.5</option>
+                    <option value="89.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.6') %> data-t>89.6</option>
+                    <option value="89.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.7') %> data-t>89.7</option>
+                    <option value="89.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.8') %> data-t>89.8</option>
+                    <option value="89.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','89.9') %> data-t>89.9</option>
+                    <option value="90.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.0') %> data-t>90.0</option>
+                    <option value="90.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.1') %> data-t>90.1</option>
+                    <option value="90.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.2') %> data-t>90.2</option>
+                    <option value="90.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.3') %> data-t>90.3</option>
+                    <option value="90.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.4') %> data-t>90.4</option>
+                    <option value="90.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.5') %> data-t>90.5</option>
+                    <option value="90.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.6') %> data-t>90.6</option>
+                    <option value="90.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.7') %> data-t>90.7</option>
+                    <option value="90.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.8') %> data-t>90.8</option>
+                    <option value="90.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','90.9') %> data-t>90.9</option>
+                    <option value="91.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.0') %> data-t>91.0</option>
+                    <option value="91.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.1') %> data-t>91.1</option>
+                    <option value="91.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.2') %> data-t>91.2</option>
+                    <option value="91.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.3') %> data-t>91.3</option>
+                    <option value="91.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.4') %> data-t>91.4</option>
+                    <option value="91.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.5') %> data-t>91.5</option>
+                    <option value="91.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.6') %> data-t>91.6</option>
+                    <option value="91.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.7') %> data-t>91.7</option>
+                    <option value="91.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.8') %> data-t>91.8</option>
+                    <option value="91.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','91.9') %> data-t>91.9</option>
+                    <option value="92.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.0') %> data-t>92.0</option>
+                    <option value="92.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.1') %> data-t>92.1</option>
+                    <option value="92.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.2') %> data-t>92.2</option>
+                    <option value="92.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.3') %> data-t>92.3</option>
+                    <option value="92.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.4') %> data-t>92.4</option>
+                    <option value="92.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.5') %> data-t>92.5</option>
+                    <option value="92.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.6') %> data-t>92.6</option>
+                    <option value="92.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.7') %> data-t>92.7</option>
+                    <option value="92.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.8') %> data-t>92.8</option>
+                    <option value="92.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','92.9') %> data-t>92.9</option>
+                    <option value="93.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.0') %> data-t>93.0</option>
+                    <option value="93.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.1') %> data-t>93.1</option>
+                    <option value="93.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.2') %> data-t>93.2</option>
+                    <option value="93.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.3') %> data-t>93.3</option>
+                    <option value="93.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.4') %> data-t>93.4</option>
+                    <option value="93.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.5') %> data-t>93.5</option>
+                    <option value="93.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.6') %> data-t>93.6</option>
+                    <option value="93.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.7') %> data-t>93.7</option>
+                    <option value="93.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.8') %> data-t>93.8</option>
+                    <option value="93.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','93.9') %> data-t>93.9</option>
+                    <option value="94.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.0') %> data-t>94.0</option>
+                    <option value="94.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.1') %> data-t>94.1</option>
+                    <option value="94.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.2') %> data-t>94.2</option>
+                    <option value="94.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.3') %> data-t>94.3</option>
+                    <option value="94.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.4') %> data-t>94.4</option>
+                    <option value="94.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.5') %> data-t>94.5</option>
+                    <option value="94.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.6') %> data-t>94.6</option>
+                    <option value="94.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.7') %> data-t>94.7</option>
+                    <option value="94.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.8') %> data-t>94.8</option>
+                    <option value="94.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','94.9') %> data-t>94.9</option>
+                    <option value="95.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.0') %> data-t>95.0</option>
+                    <option value="95.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.1') %> data-t>95.1</option>
+                    <option value="95.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.2') %> data-t>95.2</option>
+                    <option value="95.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.3') %> data-t>95.3</option>
+                    <option value="95.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.4') %> data-t>95.4</option>
+                    <option value="95.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.5') %> data-t>95.5</option>
+                    <option value="95.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.6') %> data-t>95.6</option>
+                    <option value="95.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.7') %> data-t>95.7</option>
+                    <option value="95.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.8') %> data-t>95.8</option>
+                    <option value="95.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','95.9') %> data-t>95.9</option>
+                    <option value="96.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.0') %> data-t>96.0</option>
+                    <option value="96.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.1') %> data-t>96.1</option>
+                    <option value="96.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.2') %> data-t>96.2</option>
+                    <option value="96.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.3') %> data-t>96.3</option>
+                    <option value="96.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.4') %> data-t>96.4</option>
+                    <option value="96.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.5') %> data-t>96.5</option>
+                    <option value="96.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.6') %> data-t>96.6</option>
+                    <option value="96.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.7') %> data-t>96.7</option>
+                    <option value="96.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.8') %> data-t>96.8</option>
+                    <option value="96.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','96.9') %> data-t>96.9</option>
+                    <option value="97.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.0') %> data-t>97.0</option>
+                    <option value="97.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.1') %> data-t>97.1</option>
+                    <option value="97.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.2') %> data-t>97.2</option>
+                    <option value="97.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.3') %> data-t>97.3</option>
+                    <option value="97.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.4') %> data-t>97.4</option>
+                    <option value="97.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.5') %> data-t>97.5</option>
+                    <option value="97.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.6') %> data-t>97.6</option>
+                    <option value="97.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.7') %> data-t>97.7</option>
+                    <option value="97.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.8') %> data-t>97.8</option>
+                    <option value="97.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','97.9') %> data-t>97.9</option>
+                    <option value="98.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.0') %> data-t>98.0</option>
+                    <option value="98.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.1') %> data-t>98.1</option>
+                    <option value="98.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.2') %> data-t>98.2</option>
+                    <option value="98.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.3') %> data-t>98.3</option>
+                    <option value="98.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.4') %> data-t>98.4</option>
+                    <option value="98.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.5') %> data-t>98.5</option>
+                    <option value="98.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.6') %> data-t>98.6</option>
+                    <option value="98.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.7') %> data-t>98.7</option>
+                    <option value="98.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.8') %> data-t>98.8</option>
+                    <option value="98.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','98.9') %> data-t>98.9</option>
+                    <option value="99.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.0') %> data-t>99.0</option>
+                    <option value="99.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.1') %> data-t>99.1</option>
+                    <option value="99.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.2') %> data-t>99.2</option>
+                    <option value="99.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.3') %> data-t>99.3</option>
+                    <option value="99.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.4') %> data-t>99.4</option>
+                    <option value="99.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.5') %> data-t>99.5</option>
+                    <option value="99.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.6') %> data-t>99.6</option>
+                    <option value="99.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.7') %> data-t>99.7</option>
+                    <option value="99.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.8') %> data-t>99.8</option>
+                    <option value="99.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','99.9') %> data-t>99.9</option>
+                    <option value="100.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.0') %> data-t>100.0</option>
+                    <option value="100.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.1') %> data-t>100.1</option>
+                    <option value="100.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.2') %> data-t>100.2</option>
+                    <option value="100.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.3') %> data-t>100.3</option>
+                    <option value="100.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.4') %> data-t>100.4</option>
+                    <option value="100.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.5') %> data-t>100.5</option>
+                    <option value="100.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.6') %> data-t>100.6</option>
+                    <option value="100.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.7') %> data-t>100.7</option>
+                    <option value="100.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.8') %> data-t>100.8</option>
+                    <option value="100.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','100.9') %> data-t>100.9</option>
+                    <option value="101.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.0') %> data-t>101.0</option>
+                    <option value="101.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.1') %> data-t>101.1</option>
+                    <option value="101.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.2') %> data-t>101.2</option>
+                    <option value="101.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.3') %> data-t>101.3</option>
+                    <option value="101.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.4') %> data-t>101.4</option>
+                    <option value="101.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.5') %> data-t>101.5</option>
+                    <option value="101.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.6') %> data-t>101.6</option>
+                    <option value="101.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.7') %> data-t>101.7</option>
+                    <option value="101.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.8') %> data-t>101.8</option>
+                    <option value="101.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','101.9') %> data-t>101.9</option>
+                    <option value="102.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.0') %> data-t>102.0</option>
+                    <option value="102.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.1') %> data-t>102.1</option>
+                    <option value="102.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.2') %> data-t>102.2</option>
+                    <option value="102.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.3') %> data-t>102.3</option>
+                    <option value="102.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.4') %> data-t>102.4</option>
+                    <option value="102.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.5') %> data-t>102.5</option>
+                    <option value="102.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.6') %> data-t>102.6</option>
+                    <option value="102.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.7') %> data-t>102.7</option>
+                    <option value="102.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.8') %> data-t>102.8</option>
+                    <option value="102.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','102.9') %> data-t>102.9</option>
+                    <option value="103.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.0') %> data-t>103.0</option>
+                    <option value="103.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.1') %> data-t>103.1</option>
+                    <option value="103.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.2') %> data-t>103.2</option>
+                    <option value="103.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.3') %> data-t>103.3</option>
+                    <option value="103.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.4') %> data-t>103.4</option>
+                    <option value="103.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.5') %> data-t>103.5</option>
+                    <option value="103.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.6') %> data-t>103.6</option>
+                    <option value="103.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.7') %> data-t>103.7</option>
+                    <option value="103.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.8') %> data-t>103.8</option>
+                    <option value="103.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','103.9') %> data-t>103.9</option>
+                    <option value="104.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.0') %> data-t>104.0</option>
+                    <option value="104.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.1') %> data-t>104.1</option>
+                    <option value="104.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.2') %> data-t>104.2</option>
+                    <option value="104.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.3') %> data-t>104.3</option>
+                    <option value="104.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.4') %> data-t>104.4</option>
+                    <option value="104.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.5') %> data-t>104.5</option>
+                    <option value="104.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.6') %> data-t>104.6</option>
+                    <option value="104.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.7') %> data-t>104.7</option>
+                    <option value="104.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.8') %> data-t>104.8</option>
+                    <option value="104.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','104.9') %> data-t>104.9</option>
+                    <option value="105.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.0') %> data-t>105.0</option>
+                    <option value="105.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.1') %> data-t>105.1</option>
+                    <option value="105.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.2') %> data-t>105.2</option>
+                    <option value="105.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.3') %> data-t>105.3</option>
+                    <option value="105.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.4') %> data-t>105.4</option>
+                    <option value="105.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.5') %> data-t>105.5</option>
+                    <option value="105.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.6') %> data-t>105.6</option>
+                    <option value="105.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.7') %> data-t>105.7</option>
+                    <option value="105.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.8') %> data-t>105.8</option>
+                    <option value="105.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','105.9') %> data-t>105.9</option>
+                    <option value="106.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.0') %> data-t>106.0</option>
+                    <option value="106.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.1') %> data-t>106.1</option>
+                    <option value="106.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.2') %> data-t>106.2</option>
+                    <option value="106.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.3') %> data-t>106.3</option>
+                    <option value="106.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.4') %> data-t>106.4</option>
+                    <option value="106.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.5') %> data-t>106.5</option>
+                    <option value="106.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.6') %> data-t>106.6</option>
+                    <option value="106.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.7') %> data-t>106.7</option>
+                    <option value="106.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.8') %> data-t>106.8</option>
+                    <option value="106.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','106.9') %> data-t>106.9</option>
+                    <option value="107.0"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.0') %> data-t>107.0</option>
+                    <option value="107.1"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.1') %> data-t>107.1</option>
+                    <option value="107.2"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.2') %> data-t>107.2</option>
+                    <option value="107.3"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.3') %> data-t>107.3</option>
+                    <option value="107.4"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.4') %> data-t>107.4</option>
+                    <option value="107.5"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.5') %> data-t>107.5</option>
+                    <option value="107.6"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.6') %> data-t>107.6</option>
+                    <option value="107.7"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.7') %> data-t>107.7</option>
+                    <option value="107.8"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.8') %> data-t>107.8</option>
+                    <option value="107.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.9') %> data-t>107.9</option>
+                  </select>
+                </td>
             </tr>
             <tr id="audiolog_purge_files_row">
               <td data-t>audiolog_purge_files</td>
