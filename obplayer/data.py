@@ -45,6 +45,9 @@ class ObData (object):
         if os.access(cls.datadir + '/audiologs', os.F_OK) == False:
             os.mkdir(cls.datadir + '/audiologs')
 
+        if os.access(cls.datadir + '/offair-audiologs', os.F_OK) == False:
+            os.mkdir(cls.datadir + '/offair-audiologs')
+
         if os.access(cls.datadir + '/media', os.F_OK) == False:
             os.mkdir(cls.datadir + '/media')
 
@@ -405,6 +408,8 @@ class ObConfigData (ObData):
         self.add_setting('alerts_enable', '0', 'bool')
         self.add_setting('alerts_play_leadin_enable', '0', 'bool')
         self.add_setting('alerts_alert_start_audio', self.datadir + '/media/' + 'L/' + 'leadin_message.mp3', 'text')
+        self.add_setting('leadin_audio_file_type', '.mp3', 'text')
+        self.add_setting('leadin_audio_file', '.mp3', 'text')
         self.add_setting('alerts_language_primary', 'english', 'text')
         self.add_setting('alerts_language_secondary', 'french', 'text')
         self.add_setting('alerts_voice_primary', 'en', 'text')
@@ -429,6 +434,9 @@ class ObConfigData (ObData):
         self.add_setting('location_enable', '0', 'bool')
         self.add_setting('location_longitude', '-134.18537', 'float')
         self.add_setting('location_latitude', '60.27434', 'float')
+
+        self.add_setting('offair_audiolog_enable', '0', 'bool')
+        self.add_setting('offair_audiolog_feq', '88.0', 'text')
 
         self.add_setting('led_sign_enable', '0', 'bool')
         self.add_setting('led_sign_serial_file', '/dev/ttyS1', 'text')
