@@ -32,4 +32,4 @@ def init():
 def quit():
     # stop the audio logger.
     if hasattr(obplayer, 'off_air_AudioLog'):
-        obplayer.AudioLog.stop()
+        obplayer.off_air_AudioLog.stop()
