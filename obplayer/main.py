@@ -99,6 +99,7 @@ class ObMainApp:
                 self.load_module('liveassist')
             if obplayer.Config.setting('audiolog_enable'):
                 self.load_module('audiolog')
+            if obplayer.Config.setting('offair_audiolog_enable'):
                 self.load_module('offair_audiolog')
             if obplayer.Config.setting('streamer_enable'):
                 self.load_module('streamer')
