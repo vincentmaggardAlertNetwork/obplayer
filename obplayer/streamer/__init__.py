@@ -39,10 +39,10 @@ def init():
         from .icecast import ObIcecastStreamer
         def delaystart():
             # Start stream one
-            obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_icecast_ip'), int(obplayer.Config.setting('streamer_icecast_port')),
-                    obplayer.Config.setting('streamer_icecast_password'), obplayer.Config.setting('streamer_icecast_mount'),
-                    obplayer.Config.setting('streamer_icecast_streamname'), obplayer.Config.setting('streamer_icecast_description'),
-                    obplayer.Config.setting('streamer_icecast_url'), obplayer.Config.setting('streamer_icecast_public'))
+            obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_icecast_ip'), int(obplayer.Config.setting('streamer_1_icecast_port')),
+                    obplayer.Config.setting('streamer_1_icecast_password'), obplayer.Config.setting('streamer_1_icecast_mount'),
+                    obplayer.Config.setting('streamer_1_icecast_streamname'), obplayer.Config.setting('streamer_1_icecast_description'),
+                    obplayer.Config.setting('streamer_1_icecast_url'), obplayer.Config.setting('streamer_1_icecast_public'))
             if obplayer.Config.setting('streamer_play_on_startup'):
                 obplayer.Streamer.start()
         GObject.timeout_add(1000, delaystart)
