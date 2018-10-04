@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OpenBroadcaster Player.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 import obplayer
 
@@ -29,7 +29,8 @@ from gi.repository import GObject
 
 
 def init():
-    obplayer.Streamer = None
+    obplayer.Streamer_stream_1 = None
+    obplayer.Streamer_stream_2 = None
     obplayer.RTSPStreamer = None
     obplayer.RTPStreamer = None
     obplayer.YoutubeStreamer = None
@@ -37,7 +38,11 @@ def init():
     if obplayer.Config.setting('streamer_icecast_enable'):
         from .icecast import ObIcecastStreamer
         def delaystart():
-            obplayer.Streamer = ObIcecastStreamer()
+            # Start stream one
+            obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_icecast_ip'), int(obplayer.Config.setting('streamer_icecast_port')),
+                    obplayer.Config.setting('streamer_icecast_password'), obplayer.Config.setting('streamer_icecast_mount'),
+                    obplayer.Config.setting('streamer_icecast_streamname'), obplayer.Config.setting('streamer_icecast_description'),
+                    obplayer.Config.setting('streamer_icecast_url'), obplayer.Config.setting('streamer_icecast_public'))
             if obplayer.Config.setting('streamer_play_on_startup'):
                 obplayer.Streamer.start()
         GObject.timeout_add(1000, delaystart)
@@ -75,4 +80,3 @@ def start_streamer(name, clsname):
     streamer.start()
     return streamer
 """
-
