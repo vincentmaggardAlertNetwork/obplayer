@@ -44,7 +44,7 @@ def init():
                     obplayer.Config.setting('streamer_1_icecast_streamname'), obplayer.Config.setting('streamer_1_icecast_description'),
                     obplayer.Config.setting('streamer_1_icecast_url'), obplayer.Config.setting('streamer_1_icecast_public'))
             if obplayer.Config.setting('streamer_play_on_startup'):
-                obplayer.Streamer.start()
+                obplayer.Streamer_stream_1.start()
         GObject.timeout_add(1000, delaystart)
 
     obplayer.RTSPStreamer = None
@@ -63,8 +63,10 @@ def init():
         obplayer.YoutubeStreamer.start()
 
 def quit():
-    if obplayer.Streamer:
-        obplayer.Streamer.quit()
+    if obplayer.Streamer_stream_1:
+        obplayer.Streamer_stream_1.quit()
+    if obplayer.Streamer_stream_2:
+        obplayer.Streamer_stream_2.quit()
     if obplayer.RTSPStreamer:
         obplayer.RTSPStreamer.quit()
     if obplayer.RTPStreamer:
