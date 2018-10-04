@@ -35,7 +35,17 @@ from .base import ObGstStreamer
 
 
 class ObIcecastStreamer (ObGstStreamer):
-    def __init__(self):
+    def __init__(self, streamer_icecast_ip, streamer_icecast_port, streamer_icecast_password,
+        streamer_icecast_mount, streamer_icecast_streamname, streamer_icecast_description,
+        streamer_icecast_url, streamer_icecast_public):
+        self.icecast_ip = streamer_icecast_ip
+        self.icecast_port = streamer_icecast_port
+        self.icecast_password = streamer_icecast_password
+        self.icecast_mount = streamer_icecast_mount
+        self.icecast_streamname = streamer_icecast_streamname
+        self.icecast_description = streamer_icecast_description
+        self.icecast_url = streamer_icecast_url
+        self.icecast_public = streamer_icecast_public
         ObGstStreamer.__init__(self, 'icecast')
 
         if obplayer.Config.setting('streamer_icecast_mode') == 'audio':
@@ -113,6 +123,7 @@ class ObIcecastStreamer (ObGstStreamer):
         self.audiopipe.append(Gst.ElementFactory.make("queue2"))
 
         self.shout2send = Gst.ElementFactory.make("shout2send", "shout2send")
+        '''
         self.shout2send.set_property('ip', obplayer.Config.setting('streamer_icecast_ip'))
         self.shout2send.set_property('port', int(obplayer.Config.setting('streamer_icecast_port')))
         self.shout2send.set_property('password', obplayer.Config.setting('streamer_icecast_password'))
@@ -121,6 +132,15 @@ class ObIcecastStreamer (ObGstStreamer):
         self.shout2send.set_property('description', obplayer.Config.setting('streamer_icecast_description'))
         self.shout2send.set_property('url', obplayer.Config.setting('streamer_icecast_url'))
         self.shout2send.set_property('public', obplayer.Config.setting('streamer_icecast_public'))
+        '''
+        self.shout2send.set_property('ip', self.icecast_ip)
+        self.shout2send.set_property('port', self.icecast_port)
+        self.shout2send.set_property('password', self.icecast_password)
+        self.shout2send.set_property('mount', self.icecast_mount)
+        self.shout2send.set_property('streamname', self.icecast_streamname)
+        self.shout2send.set_property('description', self.icecast_description)
+        self.shout2send.set_property('url', self.icecast_url)
+        self.shout2send.set_property('public', self.icecast_public)
         self.audiopipe.append(self.shout2send)
 
         #self.elements.append(ObRtpOutput())
@@ -351,4 +371,3 @@ class ObRtpOutput (Gst.Bin):
         self.rtpbin.link_pads('send_rtp_src_0', self.udp_rtp, 'sink')
 
         self.rtpbin.link_pads('send_rtcp_src_0', self.udp_rtcp, 'sink')
-
