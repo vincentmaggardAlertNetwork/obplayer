@@ -1457,80 +1457,112 @@
         <table class="settings">
           <tbody>
             <tr>
-              <td data-t>streamer_icecast_enable</td>
-              <td><input type="checkbox" name="streamer_icecast_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_icecast_enable') %> title="streamer_icecast_enable_tooltip" data-t></td>
+              <td data-t>streamer_0_icecast_enable</td>
+              <td><input type="checkbox" name="streamer_0_icecast_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_0_icecast_enable') %> title="streamer_icecast_enable_tooltip" data-t></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_mode</td>
-              <td><select name="streamer_icecast_mode">
-                  <option value="audio"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_mode','audio') %>>Audio Only</option>
-                  <option value="video320x200"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_mode','video320x200') %>>Video - 320x200</option>
+              <td data-t>streamer_0_icecast_mode</td>
+              <td><select name="streamer_0_icecast_mode">
+                  <option value="audio"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_mode','audio') %>>Audio Only</option>
+                  <option value="video320x200"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_mode','video320x200') %>>Video - 320x200</option>
                 </select></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_bitrate</td>
-              <td><select name="streamer_icecast_bitrate">
-                <% if obplayer.Config.setting('streamer_icecast_bitrate', '0') == 0: %>
-                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %>>Variable</option>
+              <td data-t>streamer_0_icecast_bitrate</td>
+              <td><select name="streamer_0_icecast_bitrate">
+                <% if obplayer.Config.setting('streamer_0_icecast_bitrate', '0') == 0: %>
+                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_0_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_0_icecast_bitrate', '0') %>>Variable</option>
                 <% end %>
-                <% if obplayer.Config.setting('streamer_icecast_bitrate', '0') != 0: %>
-                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %>><%= obplayer.Config.setting('streamer_icecast_bitrate', '0') %> kbps</option>
+                <% if obplayer.Config.setting('streamer_0_icecast_bitrate', '0') != 0: %>
+                      <option selected disabled hidden value=<%= obplayer.Config.setting('streamer_0_icecast_bitrate', '0') %><%= obplayer.Config.setting('streamer_0_icecast_bitrate', '0') %>><%= obplayer.Config.setting('streamer_0_icecast_bitrate', '0') %> kbps</option>
                 <% end %>
-                  <option value="0"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','0') %>>Variable</option>
-                  <option value="8"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','8') %>>8 kbps</option>
-                  <option value="16"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','16') %>>16 kbps</option>
-                  <option value="24"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','24') %>>24 kbps</option>
-                  <option value="32"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','32') %>>32 kbps</option>
-                  <option value="40"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','40') %>>40 kbps</option>
-                  <option value="48"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','48') %>>48 kbps</option>
-                  <option value="56"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','56') %>>56 kbps</option>
-                  <option value="64"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','64') %>>64 kbps</option>
-                  <option value="80"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','80') %>>80 kbps</option>
-                  <option value="96"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','96') %>>96 kbps</option>
-                  <option value="112"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','112') %>>112 kbps</option>
-                  <option value="128"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','128') %>>128 kbps</option>
-                  <option value="160"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','160') %>>160 kbps</option>
-                  <option value="192"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','192') %>>192 kbps</option>
-                  <option value="224"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','224') %>>224 kbps</option>
-                  <option value="256"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','256') %>>256 kbps</option>
-                  <option value="320"<%= obplayer.HTTPAdmin.form_item_selected('streamer_icecast_bitrate','320') %>>320 kbps</option>
+                  <option value="0"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','0') %>>Variable</option>
+                  <option value="8"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','8') %>>8 kbps</option>
+                  <option value="16"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','16') %>>16 kbps</option>
+                  <option value="24"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','24') %>>24 kbps</option>
+                  <option value="32"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','32') %>>32 kbps</option>
+                  <option value="40"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','40') %>>40 kbps</option>
+                  <option value="48"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','48') %>>48 kbps</option>
+                  <option value="56"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','56') %>>56 kbps</option>
+                  <option value="64"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','64') %>>64 kbps</option>
+                  <option value="80"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','80') %>>80 kbps</option>
+                  <option value="96"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','96') %>>96 kbps</option>
+                  <option value="112"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','112') %>>112 kbps</option>
+                  <option value="128"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','128') %>>128 kbps</option>
+                  <option value="160"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','160') %>>160 kbps</option>
+                  <option value="192"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','192') %>>192 kbps</option>
+                  <option value="224"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','224') %>>224 kbps</option>
+                  <option value="256"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','256') %>>256 kbps</option>
+                  <option value="320"<%= obplayer.HTTPAdmin.form_item_selected('streamer_0_icecast_bitrate','320') %>>320 kbps</option>
                 </select></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_ip</td>
-              <td><input type="text" name="streamer_icecast_ip" value="<%= obplayer.Config.setting('streamer_icecast_ip',True) %>"></td>
+              <td data-t>streamer_0_icecast_ip</td>
+              <td><input type="text" name="streamer_0_icecast_ip" value="<%= obplayer.Config.setting('streamer_0_icecast_ip',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_port</td>
-              <td><input type="text" name="streamer_icecast_port" value="<%= obplayer.Config.setting('streamer_icecast_port',True) %>"></td>
+              <td data-t>streamer_0_icecast_port</td>
+              <td><input type="text" name="streamer_0_icecast_port" value="<%= obplayer.Config.setting('streamer_0_icecast_port',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_mount</td>
-              <td><input type="text" name="streamer_icecast_mount" value="<%= obplayer.Config.setting('streamer_icecast_mount',True) %>"></td>
+              <td data-t>streamer_0_icecast_mount</td>
+              <td><input type="text" name="streamer_0_icecast_mount" value="<%= obplayer.Config.setting('streamer_0_icecast_mount',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_password</td>
-              <td><input type="password" name="streamer_icecast_password" value="<%= obplayer.Config.setting('streamer_icecast_password',True) %>"></td>
+              <td data-t>streamer_0_icecast_password</td>
+              <td><input type="password" name="streamer_0_icecast_password" value="<%= obplayer.Config.setting('streamer_0_icecast_password',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_streamname</td>
-              <td><input type="text" name="streamer_icecast_streamname" value="<%= obplayer.Config.setting('streamer_icecast_streamname',True) %>"></td>
+              <td data-t>streamer_0_icecast_streamname</td>
+              <td><input type="text" name="streamer_0_icecast_streamname" value="<%= obplayer.Config.setting('streamer_0_icecast_streamname',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_description</td>
-              <td><input type="text" name="streamer_icecast_description" value="<%= obplayer.Config.setting('streamer_icecast_description',True) %>"></td>
+              <td data-t>streamer_0_icecast_description</td>
+              <td><input type="text" name="streamer_0_icecast_description" value="<%= obplayer.Config.setting('streamer_0_icecast_description',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_url</td>
-              <td><input type="text" name="streamer_icecast_url" value="<%= obplayer.Config.setting('streamer_icecast_url',True) %>"></td>
+              <td data-t>streamer_0_icecast_url</td>
+              <td><input type="text" name="streamer_0_icecast_url" value="<%= obplayer.Config.setting('streamer_0_icecast_url',True) %>"></td>
             </tr>
             <tr>
-              <td data-t>streamer_icecast_public</td>
-              <td><input type="checkbox" name="streamer_icecast_public" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_icecast_public') %>></td>
+              <td data-t>streamer_0_icecast_public</td>
+              <td><input type="checkbox" name="streamer_0_icecast_public" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_0_icecast_public') %>></td>
             </tr>
             <tr>
               <td data-t>streamer_play_on_startup</td>
               <td><input type="checkbox" name="streamer_play_on_startup" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_play_on_startup') %> title="streamer_play_on_startup_tooltip" data-t></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_ip</td>
+              <td><input type="text" name="streamer_1_icecast_ip" value="<%= obplayer.Config.setting('streamer_1_icecast_ip',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_port</td>
+              <td><input type="text" name="streamer_1_icecast_port" value="<%= obplayer.Config.setting('streamer_1_icecast_port',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_mount</td>
+              <td><input type="text" name="streamer_1_icecast_mount" value="<%= obplayer.Config.setting('streamer_1_icecast_mount',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_password</td>
+              <td><input type="password" name="streamer_1_icecast_password" value="<%= obplayer.Config.setting('streamer_1_icecast_password',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_streamname</td>
+              <td><input type="text" name="streamer_1_icecast_streamname" value="<%= obplayer.Config.setting('streamer_1_icecast_streamname',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_description</td>
+              <td><input type="text" name="streamer_1_icecast_description" value="<%= obplayer.Config.setting('streamer_1_icecast_description',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_url</td>
+              <td><input type="text" name="streamer_1_icecast_url" value="<%= obplayer.Config.setting('streamer_1_icecast_url',True) %>"></td>
+            </tr>
+            <tr>
+              <td data-t>streamer_1_icecast_public</td>
+              <td><input type="checkbox" name="streamer_1_icecast_public" value="1"<%= obplayer.HTTPAdmin.form_item_checked('streamer_1_icecast_public') %>></td>
             </tr>
           </tbody>
         </table>
