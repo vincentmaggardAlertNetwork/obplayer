@@ -33,11 +33,13 @@ from gi.repository import GObject, Gst
 
 from .base import ObGstStreamer
 
+import uuid
+
 
 class ObIcecastStreamer (ObGstStreamer):
     def __init__(self, streamer_icecast_ip, streamer_icecast_port, streamer_icecast_password,
         streamer_icecast_mount, streamer_icecast_streamname, streamer_icecast_description,
-        streamer_icecast_url, streamer_icecast_public):
+        streamer_icecast_url, streamer_icecast_public, streamer_icecast_bitrate):
         self.icecast_ip = streamer_icecast_ip
         self.icecast_port = streamer_icecast_port
         self.icecast_password = streamer_icecast_password
@@ -46,7 +48,8 @@ class ObIcecastStreamer (ObGstStreamer):
         self.icecast_description = streamer_icecast_description
         self.icecast_url = streamer_icecast_url
         self.icecast_public = streamer_icecast_public
-        ObGstStreamer.__init__(self, 'icecast')
+        self.icecast_bitrate = streamer_icecast_bitrate
+        ObGstStreamer.__init__(self, 'icecast_' + uuid.uuid4().hex)
 
         if obplayer.Config.setting('streamer_icecast_mode') == 'audio':
             self.make_audio_pipe()
@@ -80,6 +83,7 @@ class ObIcecastStreamer (ObGstStreamer):
             self.audiosrc = Gst.ElementFactory.make('fakesrc', 'audiosrc')
 
         elif audio_input == 'intersink':
+            print(self.name)
             obplayer.Player.add_inter_tap(self.name)
             self.audiosrc = Gst.ElementFactory.make('interaudiosrc')
             self.audiosrc.set_property('channel', self.name + ':audio')
@@ -114,9 +118,9 @@ class ObIcecastStreamer (ObGstStreamer):
         self.audiopipe.append(Gst.ElementFactory.make("audioconvert"))
 
         self.encoder = Gst.ElementFactory.make("lamemp3enc")
-        if obplayer.Config.setting('streamer_icecast_bitrate') != 0:
+        if self.icecast_bitrate != 0:
             self.encoder.set_property('target', 1)
-            self.encoder.set_property('bitrate', obplayer.Config.setting('streamer_icecast_bitrate'))
+            self.encoder.set_property('bitrate', self.icecast_bitrate)
             self.encoder.set_property('cbr', True)
         self.audiopipe.append(self.encoder)
 
@@ -134,7 +138,7 @@ class ObIcecastStreamer (ObGstStreamer):
         self.shout2send.set_property('public', obplayer.Config.setting('streamer_icecast_public'))
         '''
         self.shout2send.set_property('ip', self.icecast_ip)
-        self.shout2send.set_property('port', self.icecast_port)
+        self.shout2send.set_property('port', int(self.icecast_port))
         self.shout2send.set_property('password', self.icecast_password)
         self.shout2send.set_property('mount', self.icecast_mount)
         self.shout2send.set_property('streamname', self.icecast_streamname)
@@ -256,14 +260,14 @@ class ObIcecastStreamer (ObGstStreamer):
         self.commonpipe.append(Gst.ElementFactory.make("queue2"))
 
         self.shout2send = Gst.ElementFactory.make("shout2send", "shout2send")
-        self.shout2send.set_property('ip', obplayer.Config.setting('streamer_icecast_ip'))
-        self.shout2send.set_property('port', int(obplayer.Config.setting('streamer_icecast_port')))
-        self.shout2send.set_property('password', obplayer.Config.setting('streamer_icecast_password'))
-        self.shout2send.set_property('mount', obplayer.Config.setting('streamer_icecast_mount'))
-        self.shout2send.set_property('streamname', obplayer.Config.setting('streamer_icecast_streamname'))
-        self.shout2send.set_property('description', obplayer.Config.setting('streamer_icecast_description'))
-        self.shout2send.set_property('url', obplayer.Config.setting('streamer_icecast_url'))
-        self.shout2send.set_property('public', obplayer.Config.setting('streamer_icecast_public'))
+        self.shout2send.set_property('ip', self.icecast_ip)
+        self.shout2send.set_property('port', int(self.icecast_port))
+        self.shout2send.set_property('password', self.icecast_password)
+        self.shout2send.set_property('mount', self.icecast_mount)
+        self.shout2send.set_property('streamname', self.icecast_streamname)
+        self.shout2send.set_property('description', self.icecast_description)
+        self.shout2send.set_property('url', self.icecast_url)
+        self.shout2send.set_property('public', self.icecast_public)
         self.shout2send.set_property('async', False)
         self.shout2send.set_property('sync', False)
         self.shout2send.set_property('qos', True)
