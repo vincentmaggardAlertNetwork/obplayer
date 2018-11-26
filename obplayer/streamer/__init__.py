@@ -35,17 +35,25 @@ def init():
     obplayer.RTPStreamer = None
     obplayer.YoutubeStreamer = None
 
-    if obplayer.Config.setting('streamer_icecast_enable'):
-        from .icecast import ObIcecastStreamer
-        def delaystart():
-            # Start stream one
-            obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_icecast_ip'), int(obplayer.Config.setting('streamer_1_icecast_port')),
+    from .icecast import ObIcecastStreamer
+    def delaystart():
+        # Start stream one
+        #print(obplayer.Config.setting('streamer_0_icecast_port'))
+        obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_0_icecast_ip'), int(obplayer.Config.setting('streamer_0_icecast_port')),
+                obplayer.Config.setting('streamer_0_icecast_password'), obplayer.Config.setting('streamer_0_icecast_mount'),
+                obplayer.Config.setting('streamer_0_icecast_streamname'), obplayer.Config.setting('streamer_0_icecast_description'),
+                obplayer.Config.setting('streamer_0_icecast_url'), obplayer.Config.setting('streamer_0_icecast_public'), obplayer.Config.setting('streamer_0_icecast_bitrate'))
+        # Start stream two
+        obplayer.Streamer_stream_2 = ObIcecastStreamer(obplayer.Config.setting('streamer_1_icecast_ip'), int(obplayer.Config.setting('streamer_1_icecast_port')),
                     obplayer.Config.setting('streamer_1_icecast_password'), obplayer.Config.setting('streamer_1_icecast_mount'),
                     obplayer.Config.setting('streamer_1_icecast_streamname'), obplayer.Config.setting('streamer_1_icecast_description'),
-                    obplayer.Config.setting('streamer_1_icecast_url'), obplayer.Config.setting('streamer_1_icecast_public'))
-            if obplayer.Config.setting('streamer_play_on_startup'):
+                    obplayer.Config.setting('streamer_1_icecast_url'), obplayer.Config.setting('streamer_1_icecast_public'), obplayer.Config.setting('streamer_1_icecast_bitrate'))
+        if obplayer.Config.setting('streamer_play_on_startup'):
+            if obplayer.Config.setting('streamer_0_icecast_enable'):
                 obplayer.Streamer_stream_1.start()
-        GObject.timeout_add(1000, delaystart)
+            if obplayer.Config.setting('streamer_1_icecast_enable'):
+                obplayer.Streamer_stream_2.start()
+    GObject.timeout_add(1000, delaystart)
 
     obplayer.RTSPStreamer = None
     if obplayer.Config.setting('streamer_rtsp_enable'):
