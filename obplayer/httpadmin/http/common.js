@@ -2,7 +2,6 @@ Site = new Object();
 
 Site.fullscreen = function()
 {
-  
   $('#command_fullscreen').text(Site.t('Miscellaneous', 'Fullscreen'));
 
   $.post('/command/fstoggle',{},function(response)
@@ -58,8 +57,26 @@ Site.save = function(section)
     if($(element).attr('type')=='checkbox') var value = ($(element).is(':checked') ? 1 : 0);
     else var value = $(element).val();
 
-    postfields[$(element).attr('name')] = value;	
+    if ($(element).attr('name') != 'alerts_geocode') {
+        // Handle blank non setting dropdown that the dropdown
+        //plugin builds.
+        if($(element).attr('name') != undefined) {
+          postfields[$(element).attr('name')] = value;
+        }
+    } else {
+      var output = '';
+      value.forEach((location) => {
+        if (value.slice(-1)[0] != location) {
+          output = output + location + ','
+        } else {
+          output = output + location
+        }
+      });
+      postfields['alerts_geocode'] = output;
+    }
   });
+
+  console.log(postfields);
 
   $.post('/save',postfields,function(response)
   {
@@ -71,6 +88,14 @@ Site.save = function(section)
     }
   });
 }
+
+//Add support for dropdown menu for alerts locations
+
+$(document).ready(function() {
+  $('#alerts_geocode').select2({
+    placeholder: 'Select an a location'
+  });
+});
 
 Site.injectAlert = function()
 {
@@ -375,7 +400,7 @@ Site.translateHTML = function( $element )
   });
 
   // translate data-t items in namespace
-  $namespaces.each(function(index,namespace) 
+  $namespaces.each(function(index,namespace)
   {
 
     var tns = $(namespace).attr('data-tns');
@@ -441,16 +466,16 @@ Site.translate = function(namespace,name,data)
   // if we have a singular data item passed as a string, make it an array.
   if(typeof(data)=='string') data = [data];
 
-  string = string.replace(/(\\)?%([0-9])+/g,function(match_string,is_escaped,data_index) { 
+  string = string.replace(/(\\)?%([0-9])+/g,function(match_string,is_escaped,data_index) {
 
     // is this escaped? also data_index = 0 is not valid.
     if(is_escaped || data_index==0) return '%'+data_index;
- 
+
     // do we have a data at the data_index?
     if(!data || !data[data_index-1]) return '';
-    
+
     // we have everything we need, do replace.
-    return data[data_index-1]; 
+    return data[data_index-1];
   });
 
   return string;
@@ -469,7 +494,7 @@ $(document).ready(function()
     {
       $(this).parent().parent().first().attr('title', $(this).attr('title'));
     });
-  }); 
+  });
 
   $('#logs-open').on('click', function (e) {
     window.open('/logs.html', '_blank', "width=600, height=600, scrollbars=1, menubar=0, toolbar=0, titlebar=0");
@@ -569,6 +594,26 @@ $(document).ready(function()
     console.log(this);
     $.ajax( {
       url: '/import_settings',
+      type: 'POST',
+      data: new FormData(this),
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        $('#notice').hide();
+        $('#error').hide();
+
+        if(response.status) $('#notice').html(Site.t('Responses', response.notice)).show();
+        else $('#error').html(Site.t('Responses', response.error)).show();
+      }
+    });
+  });
+
+  $('#import_leadin_audio').submit(function (event)
+  {
+    event.preventDefault();
+    console.log(this);
+    $.ajax( {
+      url: '/import_leadin_audio',
       type: 'POST',
       data: new FormData(this),
       processData: false,
