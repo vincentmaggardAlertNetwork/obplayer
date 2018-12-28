@@ -92,9 +92,16 @@ Site.save = function(section)
 //Add support for dropdown menu for alerts locations
 
 $(document).ready(function() {
-  $('#alerts_geocode').select2({
-    placeholder: 'Select an a location'
-  });
+  $.post('/alerts/geocodes_list', {}, function(data, status) {
+    if (data != '') {
+       $('#alerts_geocode').select2({
+         placeholder: data
+       });
+    } else {
+      $('#alerts_geocode').select2({
+        placeholder: 'Select an a location'
+      });
+    }});
 });
 
 Site.injectAlert = function()
