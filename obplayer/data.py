@@ -408,6 +408,11 @@ class ObConfigData (ObData):
 
         self.add_setting('alerts_enable', '0', 'bool')
         self.add_setting('alerts_location_type', 'CA', 'text')
+        self.add_setting('alerts_aws_voices_enable', '0', 'bool')
+        self.add_setting('aws_access_key_id', '', 'text')
+        self.add_setting('aws_secret_access_key', '', 'text')
+        self.add_setting('aws_region_name', 'us-west-1', 'text')
+        self.add_setting('alerts_location_type', 'CA', 'text')
         self.add_setting('alerts_play_leadin_enable', '0', 'bool')
         self.add_setting('alerts_alert_start_audio', self.datadir + '/media/' + 'L/' + 'leadin_message.mp3', 'text')
         self.add_setting('leadin_audio_file_type', '.mp3', 'text')
