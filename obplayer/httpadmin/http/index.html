@@ -1750,6 +1750,15 @@
               <td><input type="checkbox" name="alerts_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('alerts_enable') %>></td>
             </tr>
             <tr>
+              <td data-t>alerts_location_type</td>
+              <td>
+                <select name="alerts_location_type">
+                  <option value="US" <%= obplayer.HTTPAdmin.form_item_selected('alerts_location_type','US') %>>United States</option>
+                  <option value="CA" <%= obplayer.HTTPAdmin.form_item_selected('alerts_location_type','CA') %>>Canada</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
               <td data-t>alerts_play_leadin_enable</td>
               <td><input type="checkbox" name="alerts_play_leadin_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('alerts_play_leadin_enable') %>></td>
             </tr>
@@ -1766,12 +1775,20 @@
                       <option value=".wav">wav</option>
                   </select>
                   <button type="submit">Import</button>
+                  <form>
               </td>
+            </tr>
+            <tr>
+              <td data-t>alerts_broadcast_message_in_first_nations_languages</td>
+              <td><input type="checkbox" name="alerts_broadcast_message_in_first_nations_languages" value="1" <%= obplayer.HTTPAdmin.form_item_checked('alerts_broadcast_message_in_first_nations_languages') %>></td>
             </tr>
             <tr>
               <td data-t>alerts_geocode</td>
               <!-- <td><input type="text" name="alerts_geocode" value="<%= obplayer.Config.setting('alerts_geocode', True) %>" title="alerts_geocode_tooltip" data-t></td> -->
               <td>
+                <div>
+
+                </div>
               <select name="alerts_geocode" id="alerts_geocode" multiple="multiple">
                 <option value="1" data-t>Atlantic - SGC: 1</option>
                 <option value="10" data-t>Newfoundland and Labrador - SGC: 10</option>
