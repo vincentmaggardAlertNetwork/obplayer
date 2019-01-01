@@ -774,6 +774,29 @@
                 <td data-t>http_show_liveassist</td>
                 <td><input type="checkbox" name="http_show_liveassist" value="1"<%= obplayer.HTTPAdmin.form_item_checked('http_show_liveassist') %>></td>
               </tr>
+              <tr>
+                <td data-t>aws_access_key_id</td>
+                <td>
+                  <input type="password" name="aws_access_key_id" value="<%= obplayer.Config.setting('aws_access_key_id') %>">
+                </td>
+              </tr>
+              <tr>
+                <td data-t>aws_secret_access_key</td>
+                <td>
+                  <input type="password" name="aws_secret_access_key" value="<%= obplayer.Config.setting('aws_secret_access_key', True) %>">
+                </td>
+              </tr>
+              <tr>
+                <td data-t>aws_region_name</td>
+                <td>
+                  <select name="aws_region_name">
+                    <option value="us-east-1" <%= obplayer.HTTPAdmin.form_item_selected('aws_region_name', 'us-east-1') %>>Northern Virginia</option>
+                    <option value="us-west-1" <%= obplayer.HTTPAdmin.form_item_selected('aws_region_name', 'us-west-1') %>>Oregon</option>
+                    <option value="us-west-2" <%= obplayer.HTTPAdmin.form_item_selected('aws_region_name', 'us-west-2') %>>Northern California</option>
+                    <option value="ca-central-1" <%= obplayer.HTTPAdmin.form_item_selected('aws_region_name', 'ca-central-1') %>>Montreal</option>
+                  </select>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1756,6 +1779,12 @@
                   <option value="US" <%= obplayer.HTTPAdmin.form_item_selected('alerts_location_type','US') %>>United States</option>
                   <option value="CA" <%= obplayer.HTTPAdmin.form_item_selected('alerts_location_type','CA') %>>Canada</option>
                 </select>
+              </td>
+            </tr>
+            <tr>
+              <td data-t>alerts_aws_voices_enable</td>
+              <td>
+                <input type="checkbox" name="alerts_aws_voices_enable" value="1"<%= obplayer.HTTPAdmin.form_item_checked('alerts_aws_voices_enable') %>>
               </td>
             </tr>
             <tr>
@@ -7382,6 +7411,11 @@
                   <option value="mb-la1"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','mb-la1') %>>mb-la1</option>
                   <option value="mb-sw1"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','mb-sw1') %>>mb-sw1</option>
                   <option value="mb-sw2"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','mb-sw2') %>>mb-sw2</option>
+                  <% if obplayer.Config.setting('alerts_aws_voices_enable'): %>
+                  <option value="aws-Joanna"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','aws-Joanna') %>>AWS Polly - Joanna</option>
+                  <option value="aws-Matthew"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','aws-Joanna') %>>AWS Polly - Matthew</option>
+                  <option value="aws-Chantal"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_primary','aws-Chantal') %>>AWS Polly - Chantal</option>
+                  <% end %>
                 </select>
 	      </td>
             </tr>
@@ -7410,6 +7444,11 @@
                   <option value="mb-la1"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','mb-la1') %>>mb-la1</option>
                   <option value="mb-sw1"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','mb-sw1') %>>mb-sw1</option>
                   <option value="mb-sw2"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','mb-sw2') %>>mb-sw2</option>
+                  <% if obplayer.Config.setting('alerts_aws_voices_enable'): %>
+                  <option value="aws-Joanna"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','aws-Joanna') %>>AWS Polly - Joanna</option>
+                  <option value="aws-Matthew"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','aws-Matthew') %>>AWS Polly - Matthew</option>
+                  <option value="aws-Chantal"<%= obplayer.HTTPAdmin.form_item_selected('alerts_voice_secondary','aws-Chantal') %>>AWS Polly - Chantal</option>
+                  <% end %>
                 </select>
 	      </td>
             </tr>
@@ -7504,6 +7543,7 @@
                   <option value="obplayer/alerts/data/testalerts/4example_CAPCP_with_External_Large_Audio_File.xml" data-t>External Audio Test</option>
                   <option value="obplayer/alerts/data/testalerts/2example_CAPCP_with_Embedded_Large_Audio_File.xml" data-t>Embedded Audio Test</option>
                   <option value="obplayer/alerts/data/testalerts/2016_03_01T07_54_04_04_00IC0B0D06C_882E_1195_7170_24D9BF99FAD9.xml" data-t>Embedded Audio and Image Test</option>
+                  <option value="obplayer/alerts/data/testalerts/2019-01-01T00_04_07_02Iurn3oid32.49.0.1.124.0322195743.2019_001.xml" data-t>Multiple info blocks(en and fr)</option>
                 </select></td>
             </tr>
             <tr>
