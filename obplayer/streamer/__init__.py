@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OpenBroadcaster Player.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 import obplayer
 
@@ -29,18 +29,31 @@ from gi.repository import GObject
 
 
 def init():
-    obplayer.Streamer = None
+    obplayer.Streamer_stream_1 = None
+    obplayer.Streamer_stream_2 = None
     obplayer.RTSPStreamer = None
     obplayer.RTPStreamer = None
     obplayer.YoutubeStreamer = None
 
-    if obplayer.Config.setting('streamer_icecast_enable'):
-        from .icecast import ObIcecastStreamer
-        def delaystart():
-            obplayer.Streamer = ObIcecastStreamer()
-            if obplayer.Config.setting('streamer_play_on_startup'):
-                obplayer.Streamer.start()
-        GObject.timeout_add(1000, delaystart)
+    from .icecast import ObIcecastStreamer
+    def delaystart():
+        # Start stream one
+        #print(obplayer.Config.setting('streamer_0_icecast_port'))
+        obplayer.Streamer_stream_1 = ObIcecastStreamer(obplayer.Config.setting('streamer_0_icecast_ip'), int(obplayer.Config.setting('streamer_0_icecast_port')),
+                obplayer.Config.setting('streamer_0_icecast_password'), obplayer.Config.setting('streamer_0_icecast_mount'),
+                obplayer.Config.setting('streamer_0_icecast_streamname'), obplayer.Config.setting('streamer_0_icecast_description'),
+                obplayer.Config.setting('streamer_0_icecast_url'), obplayer.Config.setting('streamer_0_icecast_public'), obplayer.Config.setting('streamer_0_icecast_bitrate'))
+        # Start stream two
+        obplayer.Streamer_stream_2 = ObIcecastStreamer(obplayer.Config.setting('streamer_1_icecast_ip'), int(obplayer.Config.setting('streamer_1_icecast_port')),
+                    obplayer.Config.setting('streamer_1_icecast_password'), obplayer.Config.setting('streamer_1_icecast_mount'),
+                    obplayer.Config.setting('streamer_1_icecast_streamname'), obplayer.Config.setting('streamer_1_icecast_description'),
+                    obplayer.Config.setting('streamer_1_icecast_url'), obplayer.Config.setting('streamer_1_icecast_public'), obplayer.Config.setting('streamer_1_icecast_bitrate'))
+        if obplayer.Config.setting('streamer_play_on_startup'):
+            if obplayer.Config.setting('streamer_0_icecast_enable'):
+                obplayer.Streamer_stream_1.start()
+            if obplayer.Config.setting('streamer_1_icecast_enable'):
+                obplayer.Streamer_stream_2.start()
+    GObject.timeout_add(1000, delaystart)
 
     obplayer.RTSPStreamer = None
     if obplayer.Config.setting('streamer_rtsp_enable'):
@@ -58,8 +71,10 @@ def init():
         obplayer.YoutubeStreamer.start()
 
 def quit():
-    if obplayer.Streamer:
-        obplayer.Streamer.quit()
+    if obplayer.Streamer_stream_1:
+        obplayer.Streamer_stream_1.quit()
+    if obplayer.Streamer_stream_2:
+        obplayer.Streamer_stream_2.quit()
     if obplayer.RTSPStreamer:
         obplayer.RTSPStreamer.quit()
     if obplayer.RTPStreamer:
@@ -75,4 +90,3 @@ def start_streamer(name, clsname):
     streamer.start()
     return streamer
 """
-

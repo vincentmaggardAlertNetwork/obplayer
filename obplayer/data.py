@@ -45,6 +45,9 @@ class ObData (object):
         if os.access(cls.datadir + '/audiologs', os.F_OK) == False:
             os.mkdir(cls.datadir + '/audiologs')
 
+        if os.access(cls.datadir + '/offair-audiologs', os.F_OK) == False:
+            os.mkdir(cls.datadir + '/offair-audiologs')
+
         if os.access(cls.datadir + '/media', os.F_OK) == False:
             os.mkdir(cls.datadir + '/media')
 
@@ -307,19 +310,20 @@ class ObConfigData (ObData):
         self.add_setting('streamer_audio_in_mode', 'intersink', 'text')
         self.add_setting('streamer_audio_in_alsa_device', 'default', 'text')
         self.add_setting('streamer_audio_in_jack_name', '', 'text')
-
-        self.add_setting('streamer_icecast_enable', '1', 'bool')
-        self.add_setting('streamer_icecast_mode', 'audio', 'text')
-        self.add_setting('streamer_icecast_bitrate', '0', 'int')
-        self.add_setting('streamer_icecast_ip', '127.0.0.1', 'text')
-        self.add_setting('streamer_icecast_port', '8000', 'int')
-        self.add_setting('streamer_icecast_mount', 'stream', 'text')
-        self.add_setting('streamer_icecast_password', '1c3c4stS0uRc3', 'text')
-        self.add_setting('streamer_icecast_streamname', '', 'text')
-        self.add_setting('streamer_icecast_description', '', 'text')
-        self.add_setting('streamer_icecast_url', '', 'text')
-        self.add_setting('streamer_icecast_public', '0', 'bool')
-        self.add_setting('streamer_play_on_startup', '1', 'bool')
+        for i in range(2):
+            i = str(i)
+            self.add_setting('streamer_' + i + '_icecast_enable', '1', 'bool')
+            self.add_setting('streamer_' + i + '_icecast_mode', 'audio', 'text')
+            self.add_setting('streamer_' + i + '_icecast_bitrate', '0', 'int')
+            self.add_setting('streamer_' + i + '_icecast_ip', '127.0.0.1', 'text')
+            self.add_setting('streamer_' + i + '_icecast_port', '8000', 'int')
+            self.add_setting('streamer_' + i + '_icecast_mount', 'stream_' + i, 'text')
+            self.add_setting('streamer_' + i + '_icecast_password', 'hackme', 'text')
+            self.add_setting('streamer_' + i + '_icecast_streamname', '', 'text')
+            self.add_setting('streamer_' + i + '_icecast_description', '', 'text')
+            self.add_setting('streamer_' + i + '_icecast_url', '', 'text')
+            self.add_setting('streamer_' + i + '_icecast_public', '0', 'bool')
+            self.add_setting('streamer_play_on_startup', '1', 'bool')
 
         self.add_setting('streamer_rtsp_enable', '0', 'bool')
         self.add_setting('streamer_rtsp_port', '8554', 'int')
@@ -403,13 +407,22 @@ class ObConfigData (ObData):
         self.add_setting('live_assist_monitor_jack_name', '', 'text')
 
         self.add_setting('alerts_enable', '0', 'bool')
+        self.add_setting('alerts_location_type', 'CA', 'text')
+        self.add_setting('alerts_aws_voices_enable', '0', 'bool')
+        self.add_setting('aws_access_key_id', '', 'text')
+        self.add_setting('aws_secret_access_key', '', 'text')
+        self.add_setting('aws_region_name', 'us-west-1', 'text')
+        self.add_setting('alerts_location_type', 'CA', 'text')
         self.add_setting('alerts_play_leadin_enable', '0', 'bool')
         self.add_setting('alerts_alert_start_audio', self.datadir + '/media/' + 'L/' + 'leadin_message.mp3', 'text')
+        self.add_setting('leadin_audio_file_type', '.mp3', 'text')
+        self.add_setting('leadin_audio_file', '.mp3', 'text')
         self.add_setting('alerts_language_primary', 'english', 'text')
         self.add_setting('alerts_language_secondary', 'french', 'text')
         self.add_setting('alerts_voice_primary', 'en', 'text')
         self.add_setting('alerts_voice_secondary', 'fr', 'text')
         self.add_setting('alerts_geocode', '10,11,12,13,24,35,46,47,48,59,60,61,62', 'text')
+        self.add_setting('alerts_broadcast_message_in_first_nations_languages', '0', 'bool')
         self.add_setting('alerts_repeat_interval', '30', 'int')
         self.add_setting('alerts_repeat_times', '0', 'int')
         self.add_setting('alerts_leadin_delay', '1', 'int')
@@ -429,6 +442,9 @@ class ObConfigData (ObData):
         self.add_setting('location_enable', '0', 'bool')
         self.add_setting('location_longitude', '-134.18537', 'float')
         self.add_setting('location_latitude', '60.27434', 'float')
+
+        self.add_setting('offair_audiolog_enable', '0', 'bool')
+        self.add_setting('offair_audiolog_feq', '88.0', 'text')
 
         self.add_setting('led_sign_enable', '0', 'bool')
         self.add_setting('led_sign_serial_file', '/dev/ttyS1', 'text')

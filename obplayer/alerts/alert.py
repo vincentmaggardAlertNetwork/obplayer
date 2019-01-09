@@ -277,6 +277,16 @@ class ObAlert (object):
             return 'en-CA'
         elif language == 'french':
             return 'fr-CA'
+        elif language == 'cree':
+            return 'cr-CA'
+        elif language == 'inuktitut':
+            return 'iu-CA'
+        elif language == 'ojibwe':
+            return 'oj-CA'
+        elif language == 'chipewyan':
+            return 'chp-CA'
+        elif language == 'mikmaq':
+            return 'mic-CA'
         else:
             raise Exception("Unsupported language: " + language)
 

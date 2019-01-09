@@ -16,8 +16,11 @@ Outputs Tab
   audio_out_visualization: Enable Audio Visualization
   gst_init_callback: Gstreamer Init Callback
   audiolog_enable: Enable Audio Logging
+  offair_audiolog_enable: Enable Off Air Audio Logging
   audiolog_purge_files: Purge Audio Logs After 90 days
   audiolog_purge_files_tooltip: Delete audio log files after 90 days.
+  audiolog_bitrate: Audiolog bit rate
+  offair_audiolog_feq: Radio Station Frequency
 
 
   Video Output Settings: Video Output Settings
@@ -42,4 +45,3 @@ Outputs Tab
   led_sign_timedisplay: Enable LED Time
   led_sign_init_message: LED Initialize Message
   led_sign_init_message_tooltip: The message to display during initialization of LED sign.
-

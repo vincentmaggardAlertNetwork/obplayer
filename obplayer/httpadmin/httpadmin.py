@@ -103,6 +103,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         self.route('/toggle_scheduler', self.req_scheduler_toggle, 'admin')
         self.route('/alerts/inject_test', self.req_alert_inject, 'admin')
         self.route('/alerts/cancel', self.req_alert_cancel, 'admin')
+        self.route('/alerts/geocodes_list', self.req_geocodes_list)
         self.route('/pulse/volume', self.req_pulse_volume, 'admin')
         self.route('/pulse/mute', self.req_pulse_mute, 'admin')
         self.route('/pulse/select', self.req_pulse_select, 'admin')
@@ -125,6 +126,16 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
             data['show'] = obplayer.Scheduler.get_show_info()
         data['logs'] = obplayer.Log.get_log()
         return data
+
+    def req_geocodes_list(self, request):
+        data = obplayer.Config.setting('alerts_geocode', True)
+        res = httpserver.Response()
+        if data:
+            res.send_content('text/plain', data)
+            return res
+        else:
+            res.send_content('text/plain', '')
+            return res
 
     def req_alert_list(self, request):
         if hasattr(obplayer, 'alerts'):

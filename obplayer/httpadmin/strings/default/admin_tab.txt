@@ -9,6 +9,10 @@ Admin Tab
   http_show_location: Show Location Tab
   http_show_liveassist: Show LiveAssist Tab
 
+  aws_access_key_id: AWS access key ID
+  aws_secret_access_key: AWS secret access key
+  aws_region_name: AWS region name
+
   delete_and_reset: Delete data.db and Restart
   Reset To Defaults and Restart: Reset To Defaults and Restart
   Import Settings: Import Settings
@@ -21,4 +25,3 @@ Admin Tab
   Current Version: Current Version
   Latest Version: Latest Version
   Already up to date: Already up to date
-
