@@ -39,6 +39,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
     def __init__(self):
         self.root = 'obplayer/httpadmin/http'
 
+        print(obplayer.Config)
         self.username = obplayer.Config.setting('http_admin_username')
         self.password = obplayer.Config.setting('http_admin_password')
         self.readonly_username = obplayer.Config.setting('http_readonly_username')
@@ -102,9 +103,12 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         self.route('/toggle_scheduler', self.req_scheduler_toggle, 'admin')
         self.route('/alerts/inject_test', self.req_alert_inject, 'admin')
         self.route('/alerts/cancel', self.req_alert_cancel, 'admin')
+        self.route('/alerts/geocodes_list', self.req_geocodes_list)
+        self.route('/alerts/first_nations_languages', self.req_first_nations_languages_list)
         self.route('/pulse/volume', self.req_pulse_volume, 'admin')
         self.route('/pulse/mute', self.req_pulse_mute, 'admin')
         self.route('/pulse/select', self.req_pulse_select, 'admin')
+        self.route('/import_leadin_audio', self.req_import_leadin_audio, 'admin')
 
     def req_status_info(self, request):
         proc = subprocess.Popen([ "uptime", "-p" ], stdout=subprocess.PIPE)
@@ -123,6 +127,26 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
             data['show'] = obplayer.Scheduler.get_show_info()
         data['logs'] = obplayer.Log.get_log()
         return data
+
+    def req_geocodes_list(self, request):
+        data = obplayer.Config.setting('alerts_geocode', True)
+        res = httpserver.Response()
+        if data:
+            res.send_content('text/plain', data)
+            return res
+        else:
+            res.send_content('text/plain', '')
+            return res
+
+    def req_first_nations_languages_list(self, request):
+        data = obplayer.Config.setting('alerts_selected_first_nations_languages', True)
+        res = httpserver.Response()
+        if data:
+            res.send_content('text/plain', data)
+            return res
+        else:
+            res.send_content('text/plain', '')
+            return res
 
     def req_alert_list(self, request):
         if hasattr(obplayer, 'alerts'):
@@ -216,6 +240,27 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
 
         obplayer.Config.save_settings(settings)
         return { 'status' : True, 'notice' : "settings-imported-success" }
+
+    def req_import_leadin_audio(self, request):
+        content = request.args.getvalue('leadin_audio_file')
+        file_type = request.args.getvalue('leadin_audio_file_type')
+
+        errors = ''
+
+        if file_type == '.wav' or file_type == '.ogg' or file_type == '.mp3' and content != None:
+            audio_path = os.path.join(obplayer.ObData.get_datadir(), 'media', 'L', 'leadin_message' + file_type)
+            if os.path.exists(os.path.join(obplayer.ObData.get_datadir(), 'media', 'L')) == False:
+                os.mkdir(os.path.join(obplayer.ObData.get_datadir(), 'media', 'L'))
+            file = open(audio_path, 'wb')
+            file.write(content)
+            file.close()
+
+            obplayer.Config.save_settings({'alerts_alert_start_audio': audio_path})
+
+            obplayer.Log.log("importing audio file {0}".format(audio_path), 'config')
+            return { 'status' : True, 'notice' : "settings-imported-leadin-audio" }
+        else:
+            return { 'status' : False, 'error' : errors }
 
     def req_export(self, request):
         settings = ''
@@ -320,4 +365,3 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
                                     namespace = name
                                     strings[namespace] = { }
         return strings
-
