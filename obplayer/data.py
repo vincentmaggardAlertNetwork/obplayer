@@ -360,6 +360,7 @@ class ObConfigData (ObData):
         self.add_setting('fallback_media', self.datadir + '/fallback_media', 'text')
 
         self.add_setting('audio_in_enable', '0', 'bool')
+        self.add_setting('audio_output_volume', '0.5', 'float')
         self.add_setting('audio_in_mode', 'auto', 'text')
         self.add_setting('audio_in_alsa_device', 'default', 'text')
         self.add_setting('audio_in_jack_name', '', 'text')
@@ -423,6 +424,7 @@ class ObConfigData (ObData):
         self.add_setting('alerts_voice_secondary', 'fr', 'text')
         self.add_setting('alerts_geocode', '10,11,12,13,24,35,46,47,48,59,60,61,62', 'text')
         self.add_setting('alerts_broadcast_message_in_first_nations_languages', '0', 'bool')
+        self.add_setting('alerts_selected_first_nations_languages', '', 'text')
         self.add_setting('alerts_repeat_interval', '30', 'int')
         self.add_setting('alerts_repeat_times', '0', 'int')
         self.add_setting('alerts_leadin_delay', '1', 'int')
