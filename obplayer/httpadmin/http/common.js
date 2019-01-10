@@ -57,7 +57,7 @@ Site.save = function(section)
     if($(element).attr('type')=='checkbox') var value = ($(element).is(':checked') ? 1 : 0);
     else var value = $(element).val();
 
-    if ($(element).attr('name') != 'alerts_geocode') {
+    if ($(element).attr('name') != 'alerts_geocode' && $(element).attr('name') != 'alerts_selected_first_nations_languages') {
         // Handle blank non setting dropdown that the dropdown
         //plugin builds.
         if($(element).attr('name') != undefined) {
@@ -65,18 +65,18 @@ Site.save = function(section)
         }
     } else {
       var output = '';
-      value.forEach((location) => {
-        if (value.slice(-1)[0] != location) {
-          output = output + location + ','
-        } else {
-          output = output + location
-        }
-      });
-      postfields['alerts_geocode'] = output;
-    }
+      if (value != null) {
+        value.forEach((item) => {
+          if (value.slice(-1)[0] != item) {
+            output = output + item + ','
+          } else {
+            output = output + item
+          }
+        });
+        postfields[$(element).attr('name')] = output;
+      }
+      }
   });
-
-  console.log(postfields);
 
   $.post('/save',postfields,function(response)
   {
@@ -100,6 +100,21 @@ $(document).ready(function() {
     } else {
       $('#alerts_geocode').select2({
         placeholder: 'Select an a location'
+      });
+    }});
+});
+
+//Add support for dropdown menu for first nations languages
+
+$(document).ready(function() {
+  $.post('/alerts/first_nations_languages', {}, function(data, status) {
+    if (data != '') {
+       $('#alerts_selected_first_nations_languages').select2({
+         placeholder: data
+       });
+    } else {
+      $('#alerts_selected_first_nations_languages').select2({
+        placeholder: ''
       });
     }});
 });
