@@ -1812,6 +1812,18 @@
               <td><input type="checkbox" name="alerts_broadcast_message_in_first_nations_languages" value="1" <%= obplayer.HTTPAdmin.form_item_checked('alerts_broadcast_message_in_first_nations_languages') %>></td>
             </tr>
             <tr>
+              <td data-t>alerts_selected_first_nations_languages</td>
+              <td>
+                <select name="alerts_selected_first_nations_languages" id="alerts_selected_first_nations_languages" multiple="multiple">
+                  <option value="cr-CA">cree</option>
+                  <option value="iu-CA">inuktitut</option>
+                  <option value="oj-CA">ojibwe</option>
+                  <option value="chp-CA">chipewyan</option>
+                  <option value="mic-CA">mikmaq</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
               <td data-t>alerts_geocode</td>
               <!-- <td><input type="text" name="alerts_geocode" value="<%= obplayer.Config.setting('alerts_geocode', True) %>" title="alerts_geocode_tooltip" data-t></td> -->
               <td>
