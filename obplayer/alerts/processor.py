@@ -497,7 +497,12 @@ class ObAlertProcessor (object):
                                             else:
                                                 self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=mediainfo.get_duration() / float(Gst.SECOND), artist=alert_media['primary']['audio']['artist'], title='ledin message', overlay_text=alert_media['primary']['audio']['overlay_text'])
                                         self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
-                                        self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
+                                        # Play US/EAS attn tone
+                                        if obplayer.Config.setting('alerts_location_type') == 'US':
+                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "attention-signal.ogg"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
+                                        # Play CA/Alert Ready attn tone
+                                        else:
+                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
                                     self.ctrl.add_request(**alert_media['primary']['audio'])
                                     if 'visual' in alert_media['primary']:
                                         self.ctrl.add_request(start_time=start_time, **alert_media['primary']['visual'])
