@@ -46,6 +46,9 @@ gi.require_version('Gst', '1.0')
 gi.require_version('GstPbutils', '1.0')
 from gi.repository import GObject, Gst, GstPbutils
 
+import wave
+import boto3
+
 def xml_get_text(element):
     text = ''
     for node in element.childNodes:
@@ -78,7 +81,46 @@ def xml_get_first_tag_value(element, tag, default=None):
         return default
     return xml_get_text(children[0])
 
+class Feed (object):
+    def __init__(self, xmlcode=None):
+        self.known_alerts = []
+        if xmlcode != None:
+            try:
+                xmlcode = xmlcode.replace('cap:', '')
+                self.alerts = xml.dom.minidom.parseString(xmlcode)
+                #print(xml_get_tags(self.alerts))
+            except:
+                obplayer.Log.log('error parsing emergency alert xml data', 'error')
+                obplayer.Log.log(traceback.format_exc(), 'error')
+                print(xmlcode)
+                return
+    def get_alerts(self):
+        alerts = []
 
+        for alert in self.alerts.getElementsByTagName('entry'):
+            output = {}
+            #print(xml_get_first_tag_value(alert, 'id'))
+            #print(self.is_old(xml_get_first_tag_value(alert, 'id')))
+            print(self.has_fips(alert, '039025'))
+            #print(get_full_alert(xml_get_first_tag_value(alert, 'id')))
+            #alert = alert.ObAlert(get_full_alert(xml_get_first_tag_value(alert, 'id')))
+            #print(xml_get_tags(alert))
+        #     for tag in xml_get_tags(alert):
+        #         output[tag] = xml_get_first_tag_value(alert)
+        #         output.append({'tags': xml_get_tags(alert), 'values': xml_get_tags(alert)})
+        # return alerts
+    def is_old(self, id):
+        for alert in self.known_alerts:
+            if alert['id'] == id:
+                return True
+        return True
+
+    def has_fips(self, element, fips):
+        for geocode in element.getElementsByTagName('geocode'):
+            if xml_get_first_tag_value(geocode, 'valueName') == 'SAME':
+                if xml_get_first_tag_value(geocode, 'value') == str(fips):
+                    return True
+        return False
 
 class ObAlert (object):
     def __init__(self, xmlcode=None):
@@ -88,6 +130,7 @@ class ObAlert (object):
         self.previously_important = False
         self.media_info = { }
         self.received_at = time.time()
+        self.profile = 'CP-CA'
 
         if xmlcode is not None:
             self.parse_cap_xml(xmlcode)
@@ -102,6 +145,12 @@ class ObAlert (object):
             return
 
         for alert in alerts.getElementsByTagName('alert'):
+            if xml_get_first_tag_value(alert, 'code') == 'profile:CAP-CP:0.4':
+                self.profile = 'CP-CA'
+            elif xml_get_first_tag_value(alert, 'code') == 'IPAWSv1.0':
+                self.profile = 'IPAWS-CAP'
+            else:
+                self.profile = None
             self.identifier = xml_get_first_tag_value(alert, 'identifier')
             self.sender = xml_get_first_tag_value(alert, 'sender')
             self.sent = xml_get_first_tag_value(alert, 'sent')
@@ -110,10 +159,17 @@ class ObAlert (object):
             self.msgtype = xml_get_first_tag_value(alert, 'msgType', default="").lower()
             self.scope = xml_get_first_tag_value(alert, 'scope', default="").lower()
             self.references = [ ref.split(',') for ref in xml_get_first_tag_value(alert, 'references', default="").split() ]
-
             self.info = [ ]
             for node in xml_get_tags(alert, 'info'):
                 self.info.append(ObAlertInfo(node))
+
+            # Check for first nations broadcast settings
+            if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
+                for node in xml_get_tags(alert, 'info'):
+                    self.info.append(ObAlertInfo(node, True))
+                    break
+                #self.info.append(ObAlertInfo(xml_get_tags(alert, 'info')[0], True))
+
 
             self.signatures = [ ]
             for signature in xml_get_tags(alert, 'Signature'):
@@ -131,10 +187,16 @@ class ObAlert (object):
     def get_all_info(self, language):
         infos = [ ]
         lang = self.lang_ref(language)
-        for info in self.info:
-            if info.language == lang:
+        if self.profile == 'CP-CA':
+            for info in self.info:
+                if info.language == lang:
+                    infos.append(info)
+            return infos
+        # NWS Alerts don't include a lang code for a info block
+        elif self.profile == 'IPAWS-CAP':
+            for info in self.info:
                 infos.append(info)
-        return infos
+            return infos
 
     def get_first_info(self, language, bestmatch=True):
         lang = self.lang_ref(language)
@@ -144,6 +206,11 @@ class ObAlert (object):
         if bestmatch and len(self.info) > 0:
             return self.info[0]
         return None
+
+    def test(self):
+        for info in self.info:
+            for area in info.areas:
+                print(area.has_geocode(['1', '10']))
 
     def has_geocode(self, codes):
         for info in self.info:
@@ -167,9 +234,15 @@ class ObAlert (object):
         if self.previously_important:
             return True
         for info in self.info:
-            val = info.get_parameter("layer:SOREM:1.0:Broadcast_Immediately")
-            if val.lower() == "yes":
-                return True
+            if self.profile == 'CP-CA':
+                val = info.get_parameter("layer:SOREM:1.0:Broadcast_Immediately")
+                if val.lower() == "yes":
+                    return True
+            else:
+                info = self.get_first_info("en-US")
+                val = info.severity
+                if val.lower() == "severe":
+                    return True
         return False
 
     def minor_change(self):
@@ -179,32 +252,38 @@ class ObAlert (object):
                 return val
         return None
 
-    def generate_audio(self, language, voice=None):
+    def generate_audio(self, language, voice=None, first_nation=False, event=None):
         info = self.get_first_info(language, bestmatch=False)
-        if info is None:
-            self.media_info[language] = None
-            return False
+        if first_nation == False:
+            if info is None:
+                self.media_info[language] = None
+                return False
+        else:
+            info = self.get_first_info(language, bestmatch=True)
 
         truncate = not self.broadcast_immediately() and obplayer.Config.setting('alerts_truncate')
         message_text = info.get_message_text(truncate)
 
         # TODO there needs to be a better way to get the datadir
-        location = obplayer.ObData.get_datadir() + "/alerts"
-        if os.access(location, os.F_OK) == False:
-            os.mkdir(location)
-        filename = self.reference(self.sent, self.identifier) + "-" + language + ".wav"
-        uri = obplayer.Player.file_uri(location, filename)
+        if first_nation == False:
+            location = obplayer.ObData.get_datadir() + "/alerts"
+            if os.access(location, os.F_OK) == False:
+                os.mkdir(location)
+            filename = self.reference(self.sent, self.identifier) + "-" + language + ".wav"
+            uri = obplayer.Player.file_uri(location, filename)
 
-        resources = info.get_resources('audio')
-        if resources:
-            if resources[0].write_file(os.path.join(location, filename)) is False:
+            resources = info.get_resources('audio')
+            if resources:
+                if resources[0].write_file(os.path.join(location, filename)) is False:
+                    return False
+
+            elif message_text:
+                self.write_tts_file(os.path.join(location, filename), message_text, voice)
+
+            else:
                 return False
-
-        elif message_text:
-            self.write_tts_file(os.path.join(location, filename), message_text, voice)
-
         else:
-            return False
+            os.system('cp first_nations/{0}/{1} {3}'.format(language.lower(), event.lower(), os.path.join(location, filename)))
 
         d = GstPbutils.Discoverer()
         mediainfo = d.discover_uri(uri)
@@ -240,30 +319,77 @@ class ObAlert (object):
 
         return True
 
-    def get_media_info(self, primary_language, primary_voice, secondary_language, secondary_voice):
+    def get_media_info(self, primary_language, primary_voice, secondary_language, secondary_voice, first_nation):
         if primary_language not in self.media_info:
             self.generate_audio(primary_language, primary_voice)
         if secondary_language and secondary_language not in self.media_info:
             self.generate_audio(secondary_language, secondary_voice)
+        if first_nation and first_nation not in self.media_info:
+            self.generate_audio('first_nation', primary_voice)
         if primary_language not in self.media_info or self.media_info[primary_language] is None:
-            return { 'primary' : self.media_info[secondary_language], 'secondary' : None }
-        return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None }
+            return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
+            'first_nation' : self.media_info[first_nation] if first_nation else None }
+        return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
+        'first_nation' : self.media_info[first_nation] if first_nation else None }
+
+    def write_first_nations_file(self, path, language):
+        proc = subprocess.Popen([ 'espeak', '-m', '-v', voice, '-s', '140', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        (stdout, stderr) = proc.communicate(b"...<break time=\"2s\" /> " + message_text + b" <break time=\"2s\" /> " + message_text + b" <break time=\"3s\" /> ")
+        proc.wait()
+
+        with open(path, 'wb') as f:
+            f.write(stdout)
 
     def write_tts_file(self, path, message_text, voice=None):
         if not voice:
             voice = 'en'
+            #if language == 'en-CA' or language == 'fr-CA':
         message_text = message_text.rstrip('*')
         #os.system("echo \"%s\" | text2wave > %s/%s" % (message_text[0], location, filename))
         #os.system(u"espeak -v %s -s 130 -w %s/%s \"%s\"" % (voice, location, filename, message_text[0].encode('utf-8')))
         #cmd = u"espeak -v %s -s 130 -w %s/%s " % (voice, location, filename)
         #cmd += u"\"" + message_text[0] + u"\""
-        proc = subprocess.Popen([ 'espeak', '-m', '-v', voice, '-s', '130', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        message_text = cgi.escape(message_text).encode('utf-8')
-        (stdout, stderr) = proc.communicate(message_text + b" <break time=\"2s\" /> " + message_text + b" <break time=\"3s\" /> ")
-        proc.wait()
+        if voice.startswith('aws'):
+            print('voice: ' + voice)
+            voice = voice.replace('aws-', '')
+            polly_client = boto3.Session(
+                aws_access_key_id=obplayer.Config.setting('aws_access_key_id'), aws_secret_access_key=obplayer.Config.setting('aws_secret_access_key'),
+                region_name=obplayer.Config.setting('aws_region_name')).client('polly')
 
-        with open(path, 'wb') as f:
-            f.write(stdout)
+            try:
+                response = polly_client.synthesize_speech(VoiceId=voice,
+                                OutputFormat='pcm',
+                                Text = "<speak><break time=\"2s\" /> " + message_text + " <break time=\"2s\" /> " + message_text + " <break time=\"3s\" /></speak>",
+                                TextType = "ssml")
+
+                audio_data = response['AudioStream'].read()
+
+                with wave.open(path, 'wb') as file:
+                    file.setnchannels(1)
+                    file.setsampwidth(2)
+                    file.setframerate(16000)
+                    file.setcomptype('NONE', 'NONE')
+                    file.writeframes(audio_data)
+            except Exception as e:
+                # if aws errors use espeak
+                #obplayer.Log.log('AWS error such as network outage, or invaild aws ids/keys in use. error: {0}', 'error').format(e)
+                obplayer.Log.log(e, 'error')
+                voice = 'en'
+                proc = subprocess.Popen([ 'espeak', '-m', '-v', voice, '-s', '140', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+                message_text = cgi.escape(message_text).encode('utf-8')
+                (stdout, stderr) = proc.communicate(b"...<break time=\"2s\" /> " + message_text + b" <break time=\"2s\" /> " + message_text + b" <break time=\"3s\" /> ")
+                proc.wait()
+
+                with open(path, 'wb') as f:
+                    f.write(stdout)
+        else:
+            proc = subprocess.Popen([ 'espeak', '-m', '-v', voice, '-s', '140', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+            message_text = cgi.escape(message_text).encode('utf-8')
+            (stdout, stderr) = proc.communicate(b"...<break time=\"2s\" /> " + message_text + b" <break time=\"2s\" /> " + message_text + b" <break time=\"3s\" /> ")
+            proc.wait()
+
+            with open(path, 'wb') as f:
+                f.write(stdout)
 
     @staticmethod
     def reference(timestamp, identifier):
@@ -288,15 +414,76 @@ class ObAlert (object):
         elif language == 'mikmaq':
             return 'mic-CA'
         else:
-            raise Exception("Unsupported language: " + language)
+            #raise Exception("Unsupported language: " + language)
+            return 'en-US'
 
+    @staticmethod
+    def get_first_nations_languages_by_sgcs(sgcs):
+        languages = []
+        for sgc_group in sgcs:
+            for sgc in sgc_group:
+                # Check for Plains Cree
+                if sgc[0] == 'FIPS6' or sgc[0] == 'SAME' or sgc[0] == 'profile:CAP-CP:Location:0.3':
+                    if str(sgc[1]).startswith("47") or str(sgc[1]).startswith("48") or str(sgc[1]).startswith("59") or str(sgc[1]).startswith("61") and "Plains-Cree" not in languages:
+                        languages.append("Plains-Cree")
+                    # Check for Woods Cree
+                    if str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") and "Woods-Cree" not in languages:
+                        languages.append("Woods-Cree")
+                    # Check for Swampy Cree
+                    if str(sgc[1]).startswith("35") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") and "Swampy-Cree" not in languages:
+                        languages.append("Swampy-Cree")
+                    # Check for Moose Cree
+                    if str(sgc[1]).startswith("35") and "Moose-Cree" not in languages:
+                        languages.append("Moose-Cree")
+                    # Check for Atikamekw
+                    if str(sgc[1]).startswith("24") and "Atikamekw" not in languages:
+                        languages.append("Atikamekw")
+                    #Check for Northern East Cree
+                    if str(sgc[1]).startswith("24") and "Northern-East-Cree" not in languages:
+                        languages.append("Northern-East-Cree")
+                    # Check for Southern East Cree
+                    if str(sgc[1]).startswith("24") and "Southern-East-Cree" not in languages:
+                        languages.append("Southern-East-Cree")
+                    # Check for Kawawachikamach Naskapi
+                    if str(sgc[1]).startswith("24") and "Kawawachikamach-Naskapi" not in languages:
+                        languages.append("Kawawachikamach-Naskapi")
+                    # Check for Western Innu
+                    if str(sgc[1]).startswith("24") and "Western-Innu" not in languages:
+                        languages.append("Western-Innu")
+                    # Check for Eastern Innu
+                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith(10) and "Eastern-Innu" not in languages:
+                        languages.append("Eastern-Innu")
+                    # Check for Inuktitut
+                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("10") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("61")\
+                    and "Inuktitut" not in languages:
+                        languages.append("Inuktitut")
+                    # Check for Ojibwe
+                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("35") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") or str(sgc[1]).startswith("59")\
+                    and "Ojibwe" not in languages:
+                        languages.append("Ojibwe")
+                    # Check for Innu
+                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("10") and "Innu" not in languages:
+                        languages.append("Innu")
+                    # Check for Chipewyin
+                    if str(sgc[1]).startswith("47") or str(sgc[1]).startswith("48") or str(sgc[1]).startswith("61") or str(sgc[1]).startswith("46")\
+                    and "Chipewyin" not in languages:
+                        languages.append("Chipewyin")
+                    # Check for Mikmaq
+                    if str(sgc[1]).startswith("12") or str(sgc[1]).startswith("13") or str(sgc[1]).startswith("11") or str(sgc[1]).startswith("10")\
+                    and "Mikmaq" not in languages:
+                        languages.append("Mikmaq")
+        return languages
 
 class ObAlertInfo (object):
-    def __init__(self, element):
+    def __init__(self, element, first_nations_mode=False):
+        self.first_nations_mode = first_nations_mode
         self.parse_info(element)
 
     def parse_info(self, info):
-        self.language = xml_get_first_tag_value(info, 'language', 'en-US')
+        if self.first_nations_mode:
+            self.language = 'first_nations'
+        else:
+            self.language = xml_get_first_tag_value(info, 'language', 'en-US')
         self.event = xml_get_first_tag_value(info, 'event')
         self.urgency = xml_get_first_tag_value(info, 'urgency')
         self.severity = xml_get_first_tag_value(info, 'severity')
@@ -358,13 +545,26 @@ class ObAlertInfo (object):
         if not text:
             #text = self.description if self.description else self.headline
             # CLF Guide 1.2: Appendix D, Section 2.2
-            sender = ' - ' + self.sender if self.sender else ''
-            areadesc = ' - ' + ', '.join([ area.description for area in self.areas ])
-            instruction = ' - ' + self.instruction if self.instruction else ''
+            sender = ' ' + self.sender if self.sender else ''
+            areadesc = ' ' + ', '.join([ area.description for area in self.areas ])
+            geocodes = [ area.geocodes for area in self.areas ]
+            description = '. ' + self.description if self.description else ''
+            instruction = '. ' + self.instruction if self.instruction else ''
+            event = ' ' + self.event if self.event else ''
+            self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(geocodes)
+            obplayer.Log.log('Locations Data: ' + str(geocodes), 'alerts')
+            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+            if self.event == "test":
+               event = 'Test Alert'
             if self.language == 'fr-CA':
-                text = 'Alerte' + sender + ' - ' + 'Alerte ' + self.event + areadesc + instruction
+                text = 'Alerte' + sender + ' - ' + 'Alerte ' + event + areadesc +  instruction
+            elif self.language == 'first_nation':
+                self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(geocodes)
+                obplayer.Log.log('First Nation Data: ' + str(first_nations), 'alerts')
+                for first_nation in first_nations:
+                    message_text = '<audio src="data/first_nations/{0}/{1}">'.format(first_nation.lower(), event.lower())
             else:
-                text = 'Alert' + sender + ' - ' + self.event + ' Alert' + areadesc + instruction
+                text = 'Message From' + sender + '. ' + event + ' For ' + areadesc + description + instruction
 
         if sys.version.startswith('3'):
             import html
@@ -383,6 +583,12 @@ class ObAlertInfo (object):
 class ObAlertArea (object):
     def __init__(self, element):
         self.parse_area(element)
+    @staticmethod
+    def get_sgcs():
+        if self.geocodes != None:
+            return self.geocodes
+        else:
+            return None
 
     def parse_area(self, area):
         self.description = xml_get_first_tag_value(area, 'areaDesc')
@@ -403,12 +609,19 @@ class ObAlertArea (object):
         for geocode in self.geocodes:
             for code in codes:
                 # TODO this is a bit of a hack
-                if geocode[0] == 'profile:CAP-CP:Location:0.3' and (geocode[1].startswith(code) or code.startswith(geocode[1])):
-                    return True
+                if obplayer.Config.setting('alerts_location_type') == 'US':
+                    if geocode[0] == 'SAME' or geocode[0] == 'FIPS6' and geocode[1] == code:
+                        return True
+                elif obplayer.Config.setting('alerts_location_type') == 'CA':
+                    if geocode[0] == 'profile:CAP-CP:Location:0.3' and (geocode[1].startswith(code) or code.startswith(geocode[1])):
+                        return True
         return False
 
     def add_geocode(self, code):
-        self.geocodes.append([ 'profile:CAP-CP:Location:0.3', code ])
+        if obplayer.Config.setting('alerts_location_type') == 'US':
+            self.geocodes.append([ 'SAME', code ])
+        elif obplayer.Config.setting('alerts_location_type') == 'CA':
+            self.geocodes.append([ 'profile:CAP-CP:Location:0.3', code ])
 
 
 class ObAlertResource (object):
@@ -469,4 +682,3 @@ def parse_alert_file(xmlfile):
     with open(xmlfile, 'rb') as f:
         alert = ObAlert(f.read())
     return alert
-
