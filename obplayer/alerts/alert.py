@@ -374,8 +374,7 @@ class ObAlert (object):
                     file.writeframes(audio_data)
             except Exception as e:
                 # if aws errors use espeak
-                #obplayer.Log.log('AWS error such as network outage, or invaild aws ids/keys in use. error: {0}', 'error').format(e)
-                obplayer.Log.log(e, 'error')
+                obplayer.Log.log('AWS error such as network outage, or invaild aws ids/keys in use. error: {0}\nUsing local tts as backup audio.', 'error').format(e)
                 voice = 'en'
                 proc = subprocess.Popen([ 'espeak', '-m', '-v', voice, '-s', '140', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
                 message_text = cgi.escape(message_text).encode('utf-8')
@@ -391,7 +390,7 @@ class ObAlert (object):
             proc.wait()
 
             with open(path, 'wb') as f:
-                f.write(stdout)
+                f.write(stdout) 
 
     @staticmethod
     def reference(timestamp, identifier):
