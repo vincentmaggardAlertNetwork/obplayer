@@ -283,7 +283,7 @@ class ObAlert (object):
             else:
                 return False
         else:
-            os.system('cp first_nations/{0}/{1} {3}'.format(language.lower(), event.lower(), os.path.join(location, filename)))
+            write_first_nations_file(os.path.join(location, filename), event.lower())
 
         d = GstPbutils.Discoverer()
         mediainfo = d.discover_uri(uri)
