@@ -422,58 +422,59 @@ class ObAlert (object):
     @staticmethod
     def get_first_nations_languages_by_sgcs(sgcs):
         languages = []
-        for sgc_group in sgcs:
-            for sgc in sgc_group:
-                # Check for Plains Cree
-                if sgc[0] == 'FIPS6' or sgc[0] == 'SAME' or sgc[0] == 'profile:CAP-CP:Location:0.3':
-                    if str(sgc[1]).startswith("47") or str(sgc[1]).startswith("48") or str(sgc[1]).startswith("59") or str(sgc[1]).startswith("61") and "Plains-Cree" not in languages:
-                        languages.append("Plains-Cree")
-                    # Check for Woods Cree
-                    if str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") and "Woods-Cree" not in languages:
-                        languages.append("Woods-Cree")
-                    # Check for Swampy Cree
-                    if str(sgc[1]).startswith("35") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") and "Swampy-Cree" not in languages:
-                        languages.append("Swampy-Cree")
-                    # Check for Moose Cree
-                    if str(sgc[1]).startswith("35") and "Moose-Cree" not in languages:
-                        languages.append("Moose-Cree")
-                    # Check for Atikamekw
-                    if str(sgc[1]).startswith("24") and "Atikamekw" not in languages:
-                        languages.append("Atikamekw")
-                    #Check for Northern East Cree
-                    if str(sgc[1]).startswith("24") and "Northern-East-Cree" not in languages:
-                        languages.append("Northern-East-Cree")
-                    # Check for Southern East Cree
-                    if str(sgc[1]).startswith("24") and "Southern-East-Cree" not in languages:
-                        languages.append("Southern-East-Cree")
-                    # Check for Kawawachikamach Naskapi
-                    if str(sgc[1]).startswith("24") and "Kawawachikamach-Naskapi" not in languages:
-                        languages.append("Kawawachikamach-Naskapi")
-                    # Check for Western Innu
-                    if str(sgc[1]).startswith("24") and "Western-Innu" not in languages:
-                        languages.append("Western-Innu")
-                    # Check for Eastern Innu
-                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith(10) and "Eastern-Innu" not in languages:
-                        languages.append("Eastern-Innu")
-                    # Check for Inuktitut
-                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("10") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("61")\
-                    and "Inuktitut" not in languages:
-                        languages.append("Inuktitut")
-                    # Check for Ojibwe
-                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("35") or str(sgc[1]).startswith("46") or str(sgc[1]).startswith("47") or str(sgc[1]).startswith("59")\
-                    and "Ojibwe" not in languages:
-                        languages.append("Ojibwe")
-                    # Check for Innu
-                    if str(sgc[1]).startswith("24") or str(sgc[1]).startswith("10") and "Innu" not in languages:
-                        languages.append("Innu")
-                    # Check for Chipewyin
-                    if str(sgc[1]).startswith("47") or str(sgc[1]).startswith("48") or str(sgc[1]).startswith("61") or str(sgc[1]).startswith("46")\
-                    and "Chipewyin" not in languages:
-                        languages.append("Chipewyin")
-                    # Check for Mikmaq
-                    if str(sgc[1]).startswith("12") or str(sgc[1]).startswith("13") or str(sgc[1]).startswith("11") or str(sgc[1]).startswith("10")\
-                    and "Mikmaq" not in languages:
-                        languages.append("Mikmaq")
+        for sgc in sgcs:
+            if type(sgc) != str:
+                #print('SGC: {0} not string'.format(sgc))
+                ObLog.log('SGC: {0} invaild'.format(sgc), 'error')
+                continue
+            if str(sgc).startswith("47") or str(sgc).startswith("48") or str(sgc).startswith("59") or str(sgc).startswith("61") and "Plains-Cree" not in languages:
+                languages.append("Plains-Cree")
+            # Check for Woods Cree
+            if str(sgc).startswith("46") or str(sgc).startswith("47") and "Woods-Cree" not in languages:
+                languages.append("Woods-Cree")
+            # Check for Swampy Cree
+            if str(sgc).startswith("35") or str(sgc).startswith("46") or str(sgc).startswith("47") and "Swampy-Cree" not in languages:
+                languages.append("Swampy-Cree")
+            # Check for Moose Cree
+            if str(sgc).startswith("35") and "Moose-Cree" not in languages:
+                languages.append("Moose-Cree")
+            # Check for Atikamekw
+            if str(sgc).startswith("24") and "Atikamekw" not in languages:
+                languages.append("Atikamekw")
+            #Check for Northern East Cree
+            if str(sgc).startswith("24") and "Northern-East-Cree" not in languages:
+                languages.append("Northern-East-Cree")
+            # Check for Southern East Cree
+            if str(sgc).startswith("24") and "Southern-East-Cree" not in languages:
+                languages.append("Southern-East-Cree")
+            # Check for Kawawachikamach Naskapi
+            if str(sgc).startswith("24") and "Kawawachikamach-Naskapi" not in languages:
+                languages.append("Kawawachikamach-Naskapi")
+            # Check for Western Innu
+            if str(sgc).startswith("24") and "Western-Innu" not in languages:
+                languages.append("Western-Innu")
+            # Check for Eastern Innu
+            if str(sgc).startswith("24") or str(sgc).startswith("10") and "Eastern-Innu" not in languages:
+                languages.append("Eastern-Innu")
+            # Check for Inuktitut
+            if str(sgc).startswith("24") or str(sgc).startswith("10") or str(sgc).startswith("46") or str(sgc).startswith("61")\
+            and "Inuktitut" not in languages:
+                languages.append("Inuktitut")
+            # Check for Ojibwe
+            if str(sgc).startswith("24") or str(sgc).startswith("35") or str(sgc).startswith("46") or str(sgc).startswith("47") or str(sgc).startswith("59")\
+            and "Ojibwe" not in languages:
+                languages.append("Ojibwe")
+            # Check for Innu
+            if str(sgc).startswith("24") or str(sgc).startswith("10") and "Innu" not in languages:
+                languages.append("Innu")
+            # Check for Chipewyin
+            if str(sgc).startswith("47") or str(sgc).startswith("48") or str(sgc).startswith("61") or str(sgc).startswith("46")\
+            and "Chipewyin" not in languages:
+                languages.append("Chipewyin")
+            # Check for Mikmaq
+            if str(sgc).startswith("12") or str(sgc).startswith("13") or str(sgc).startswith("11") or str(sgc).startswith("10")\
+            and "Mikmaq" not in languages:
+                languages.append("Mikmaq")
         return languages
 
 class ObAlertInfo (object):
