@@ -55,6 +55,10 @@ class ObRemoteData (obplayer.ObData):
             obplayer.Log.log('liveassist group items table not found, creating', 'data')
             self.shows_group_items_create_table()
 
+        if not self.table_exists('alert_media'):
+            obplayer.Log.log('alert media table not found, creating', 'data')
+            self.alert_media_create_table()
+
         self.priority_broadcasts = False
 
     def backup(self):
@@ -92,6 +96,9 @@ class ObRemoteData (obplayer.ObData):
     def shows_media_create_table(self):
         self.execute('CREATE TABLE shows_media (id INTEGER PRIMARY KEY, local_show_id INTEGER, media_id INTEGER, show_id INTEGER, order_num INTEGER, filename TEXT, artist TEXT, title TEXT, offset NUMERIC, duration NUMERIC, media_type TEXT, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
         self.execute('CREATE INDEX local_show_id_index on shows_media (local_show_id)')
+
+    def alert_media_create_table(self):
+        self.execute('CREATE TABLE `alert_media`(`id` INTEGER, `media_id` INTEGER, `filename` TEXT, `artist` TEXT, `title` TEXT, `offset` NUMERIC, `duration` NUMERIC, `media_type` TEXT, `file_hash` TEXT, `file_size` INT, `file_location` TEXT, `approved` INT, `archived` INT, PRIMARY KEY(`id`))')
 
     def priority_broadcasts_create_table(self):
         self.execute('CREATE TABLE priority_broadcasts (id INTEGER PRIMARY KEY, start_timestamp INTEGER, end_timestamp INTEGER, frequency INTEGER, filename TEXT, artist TEXT, title TEXT, duration NUMERIC, media_type TEXT, media_id INTEGER, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
@@ -259,6 +266,28 @@ class ObRemoteData (obplayer.ObData):
             media_list[media_row['filename']] = media_row
 
         return media_list
+
+    # def alert_media_required(self):
+    #     for language_code in obplayer.Config.setting('alerts_selected_first_nations_languages').split(',')
+    #         if language_code == 'cr-CA':
+    #            language = 'cree'
+    #         elif language == 'iu-CA':
+    #             return 'inuktitut'
+    #         elif language == 'oj-CA':
+    #             return 'ojibwe'
+    #         elif language == 'chp-CA':
+    #             return 'chipewyan'
+    #         elif language == 'mic-CA':
+    #             return 'mikmaq'
+    #     rows = self.execute("SELECT filename,media_id,file_hash,file_location,approved,archived,file_size,media_type from shows_media GROUP by media_id")
+    #
+    #     media_list = {}
+    #
+    #     for row in rows:
+    #         media_row = self.get_media_from_row(row)
+    #         media_list[media_row['filename']] = media_row
+    #
+    #     return media_list
 
     @staticmethod
     def get_media_from_row(row):
@@ -430,5 +459,3 @@ class ObRemoteData (obplayer.ObData):
 
             self.priority_broadcasts = broadcasts
             return broadcasts
-
-
