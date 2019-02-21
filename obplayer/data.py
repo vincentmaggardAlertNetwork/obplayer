@@ -41,6 +41,9 @@ class ObData (object):
 
         if os.access(cls.datadir + '/alerts', os.F_OK) == False:
             os.mkdir(cls.datadir + '/alerts')
+            
+        if os.access(cls.datadir + '/first_nations', os.F_OK) == False:
+            os.mkdir(cls.datadir + '/first_nations')
 
         if os.access(cls.datadir + '/audiologs', os.F_OK) == False:
             os.mkdir(cls.datadir + '/audiologs')
