@@ -98,7 +98,7 @@ class ObRemoteData (obplayer.ObData):
         self.execute('CREATE INDEX local_show_id_index on shows_media (local_show_id)')
 
     def alert_media_create_table(self):
-        self.execute('CREATE TABLE `alert_media`(`id` INTEGER, `media_id` INTEGER, `filename` TEXT, `artist` TEXT, `title` TEXT, `offset` NUMERIC, `duration` NUMERIC, `media_type` TEXT, `file_hash` TEXT, `file_size` INT, `file_location` TEXT, `approved` INT, `archived` INT, PRIMARY KEY(`id`))')
+        self.execute('CREATE TABLE alert_media (media_id INTEGER, filename TEXT, duration NUMERIC, file_hash TEXT, file_size INT, file_location TEXT, PRIMARY KEY(media_id))')
 
     def priority_broadcasts_create_table(self):
         self.execute('CREATE TABLE priority_broadcasts (id INTEGER PRIMARY KEY, start_timestamp INTEGER, end_timestamp INTEGER, frequency INTEGER, filename TEXT, artist TEXT, title TEXT, duration NUMERIC, media_type TEXT, media_id INTEGER, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
@@ -110,7 +110,24 @@ class ObRemoteData (obplayer.ObData):
     def shows_group_items_create_table(self):
         self.execute('CREATE TABLE group_items (id INTEGER PRIMARY KEY, group_id INTEGER, media_id INTEGER, order_num INTEGER, filename TEXT, artist TEXT, title TEXT, duration NUMERIC, media_type TEXT, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
         self.execute('CREATE INDEX group_id_index on group_items (group_id)')
+    
+    #
+    # Given media id, filename, duration, file_hash, file_hash,
+    # file_size, and event_name, add entry to show database.  If entry exists, edit if required.
+    # Return false if edit not required.  Return lastrowid otherwise.
+    def alert_audio_addedit(self, media_id, filename, duration, file_hash, file_size, event_name):
+        rows = self.execute("SELECT media_id from alert_media where media_id=?", (str(media_id),))
+        for row in rows:
+            # if update not required, return false.
+            if int(row[0]) == int(media_id):
+                return False
+            else:
+                # if we have a match, but update is required, delete entry + associated media.
+                self.execute("DELETE from alert_media where media_id=?", (str(row[2]),))
 
+        # now add the alert media... (media not added here, but added by sync script)
+        self.execute("INSERT or REPLACE into alert_media VALUES (null, ?, ?, ?, ?, ?, ?, ?)", (media_id, filename, duration, file_hash, file_size, duration, event_name))
+        return self.db.last_insert_rowid()
     #
     # Given show_id, name, description, datetime, and duration, add entry to show database.  If entry exists, edit if required.
     # Return false if edit not required.  Return lastrowid otherwise.
