@@ -36,6 +36,7 @@ import json
 import calendar
 import threading
 import traceback
+import requests
 
 
 MIN_SERVER_VERSION = '4.1.1-20150507'
@@ -582,17 +583,78 @@ class ObSync:
 
         if delete_unused_media == True:
             self.remove_unused_media(obplayer.Config.setting('remote_media'), media_required)
+            
+    #
+    # Sync media files.  This takes a look at show_media and priority_broadcast tables to determine the media required,
+    # then downloads that media from the web application.
+    #
+    def sync_media(self, delete_unused_media=True):
 
+        if self.sync_media_required == False:
+            return
+
+        self.sync_media_required = False
+
+        media_required = obplayer.RemoteData.media_required()
+
+        for media_row in media_required:
+
+            media = media_required[media_row]
+
+            if self.check_media(media) == False:
+                self.sync_media_file = media['media_id']
+                self.fetch_media(media)
+                self.sync_media_file = False
+
+        if delete_unused_media == True:
+            self.remove_unused_media(obplayer.Config.setting('remote_media'), media_required)    
+    class Sync_Alert_Media_Thread(obplayer.ObThread):
+        def __init__(self):
+            # Download first nations alert data from server.
+            if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
+                pass
+        def run(self):
+            while True:
+                self.sync_alert_media()
+                # Sleeping for sync_freq time
+                time.sleep(obplayer.Config.setting('sync_freq'))
+
+    def fetch_alert_media(self, media):
+        postfields = {}
+
+        postfields['id'] = obplayer.Config.setting('sync_device_id')
+        postfields['pw'] = obplayer.Config.setting('sync_device_password')
+        postfields['media_id'] = media['media_id']
+
+        data = requests.post(obplayer.Config.setting('sync_url') + "?action=media", data=postfields).content
+        try:
+            with open(obplayer.RemoteData.datadir + '/first_nations/demo/' + media['filename'], 'wb') as file:
+                file.write(data)
+        except FileNotFoundError as e:
+            print('FileNotFoundError')
+    def sync_alert_media(self):
+        media_required = obplayer.RemoteData.alert_media_required()
+
+        for media_row in media_required:
+
+            media = media_required[media_row]
+
+            if self.check_media(media, True) == False:
+                self.sync_media_file = media['media_id']
+                self.fetch_alert_media(media)
+                self.sync_media_file = False
     #
     #
     # uses media['file_location'], media['file_size'], media['filename'] to see if available media is the correct filesize.
     #
-    def check_media(self, media):
+    def check_media(self, media, alert_mode=False):
 
         if media['media_type'] not in [ 'audio', 'video', 'image' ]:
             return True
-
-        media_fullpath = obplayer.Config.setting('remote_media') + '/' + media['file_location'][0] + '/' + media['file_location'][1] + '/' + media['filename']
+        if alert_mode:
+            media_fullpath = obplayer.Config.setting('remote_media') + '/first_nations/demo/' + media['file_location'][0] + '/' + media['file_location'][1] + '/' + media['filename']
+        else:
+            media_fullpath = obplayer.Config.setting('remote_media') + '/' + media['file_location'][0] + '/' + media['file_location'][1] + '/' + media['filename']
 
         # TODO provide file hash check (slow) as an option.
 
