@@ -98,7 +98,7 @@ class ObRemoteData (obplayer.ObData):
         self.execute('CREATE INDEX local_show_id_index on shows_media (local_show_id)')
 
     def alert_media_create_table(self):
-        self.execute('CREATE TABLE alert_media (media_id INTEGER, filename TEXT, duration NUMERIC, file_hash TEXT, file_size INT, file_location TEXT, PRIMARY KEY(media_id))')
+        self.execute('CREATE TABLE alert_media (media_id INTEGER, filename TEXT, file_hash TEXT, file_size INT, language TEXT, event_name TEXT, media_type TEXT, PRIMARY KEY(media_id))')
 
     def priority_broadcasts_create_table(self):
         self.execute('CREATE TABLE priority_broadcasts (id INTEGER PRIMARY KEY, start_timestamp INTEGER, end_timestamp INTEGER, frequency INTEGER, filename TEXT, artist TEXT, title TEXT, duration NUMERIC, media_type TEXT, media_id INTEGER, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
@@ -110,12 +110,12 @@ class ObRemoteData (obplayer.ObData):
     def shows_group_items_create_table(self):
         self.execute('CREATE TABLE group_items (id INTEGER PRIMARY KEY, group_id INTEGER, media_id INTEGER, order_num INTEGER, filename TEXT, artist TEXT, title TEXT, duration NUMERIC, media_type TEXT, file_hash TEXT, file_size INT, file_location TEXT, approved INT, archived INT)')
         self.execute('CREATE INDEX group_id_index on group_items (group_id)')
-    
+
     #
-    # Given media id, filename, duration, file_hash, file_hash,
-    # file_size, and event_name, add entry to show database.  If entry exists, edit if required.
+    # Given media id, filename, file_hash, file_size, event_name,
+    # language and media_type, add entry to show database.  If entry exists, edit if required.
     # Return false if edit not required.  Return lastrowid otherwise.
-    def alert_audio_addedit(self, media_id, filename, duration, file_hash, file_size, event_name):
+    def alert_audio_addedit(self, media_id, filename, file_hash, file_size, event_name, media_type):
         rows = self.execute("SELECT media_id from alert_media where media_id=?", (str(media_id),))
         for row in rows:
             # if update not required, return false.
@@ -126,8 +126,9 @@ class ObRemoteData (obplayer.ObData):
                 self.execute("DELETE from alert_media where media_id=?", (str(row[2]),))
 
         # now add the alert media... (media not added here, but added by sync script)
-        self.execute("INSERT or REPLACE into alert_media VALUES (null, ?, ?, ?, ?, ?, ?, ?)", (media_id, filename, duration, file_hash, file_size, duration, event_name))
+        self.execute("INSERT or REPLACE into alert_media VALUES (?, ?, ?, ?, ?, ?, ?)", (media_id, filename, file_hash, file_size, "demo", event_name, media_type))
         return self.db.last_insert_rowid()
+
     #
     # Given show_id, name, description, datetime, and duration, add entry to show database.  If entry exists, edit if required.
     # Return false if edit not required.  Return lastrowid otherwise.
@@ -284,27 +285,44 @@ class ObRemoteData (obplayer.ObData):
 
         return media_list
 
-    # def alert_media_required(self):
-    #     for language_code in obplayer.Config.setting('alerts_selected_first_nations_languages').split(',')
-    #         if language_code == 'cr-CA':
-    #            language = 'cree'
-    #         elif language == 'iu-CA':
-    #             return 'inuktitut'
-    #         elif language == 'oj-CA':
-    #             return 'ojibwe'
-    #         elif language == 'chp-CA':
-    #             return 'chipewyan'
-    #         elif language == 'mic-CA':
-    #             return 'mikmaq'
-    #     rows = self.execute("SELECT filename,media_id,file_hash,file_location,approved,archived,file_size,media_type from shows_media GROUP by media_id")
-    #
-    #     media_list = {}
-    #
-    #     for row in rows:
-    #         media_row = self.get_media_from_row(row)
-    #         media_list[media_row['filename']] = media_row
-    #
-    #     return media_list
+    def get_media_info(self, media_id):
+        for media in self.media_required():
+            print(media)
+            if media['media_id'] == media_id:
+                return media
+        return None
+
+    def alert_media_required(self):
+        import json, requests, time
+        postfields = {}
+        postfields['id'] = obplayer.Config.setting('sync_device_id')
+        postfields['pw'] = obplayer.Config.setting('sync_device_password')
+
+        data_request = requests.post(obplayer.Config.setting('sync_url').replace('/remote.php', '/modules/alert_languages/remote.php'), data=postfields)
+        data = json.loads(data_request.content.decode('utf-8'))
+        for media_item in data[2]['Demo Language']:
+            #print(media_item)
+            self.alert_audio_addedit(media_item['media_id'], media_item['alert_name'].lower() + '.' + media_item['media_format'], media_item['media_hash'], media_item['media_filesize'], media_item['alert_name'], media_item['media_type'])
+        # for language_code in obplayer.Config.setting('alerts_selected_first_nations_languages').split(','):
+        #     if language_code == 'cr-CA':
+        #        language = 'cree'
+        #     elif language == 'iu-CA':
+        #         return 'inuktitut'
+        #     elif language == 'oj-CA':
+        #         return 'ojibwe'
+        #     elif language == 'chp-CA':
+        #         return 'chipewyan'
+        #     elif language == 'mic-CA':
+        #         return 'mikmaq'
+        rows = self.execute("SELECT media_id,filename,file_hash,file_size,language,event_name,media_type from alert_media GROUP by media_id")
+
+        media_list = {}
+
+        for row in rows:
+            media_row = self.get_alert_media_from_row(row)
+            media_list[media_row['filename']] = media_row
+
+        return media_list
 
     @staticmethod
     def get_media_from_row(row):
@@ -317,6 +335,18 @@ class ObRemoteData (obplayer.ObData):
         media_row['approved'] = row[4]
         media_row['archived'] = row[5]
         media_row['media_type'] = row[7]
+        return media_row
+
+    @staticmethod
+    def get_alert_media_from_row(row):
+        media_row = {}
+        media_row['media_id'] = row[0]
+        media_row['filename'] = row[1]
+        media_row['file_hash'] = row[2]
+        media_row['file_size'] = row[3]
+        media_row['language'] = row[4]
+        media_row['event_name'] = row[5]
+        media_row['media_type'] = row[6]
         return media_row
 
     #
