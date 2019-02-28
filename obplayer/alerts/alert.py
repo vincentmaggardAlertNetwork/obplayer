@@ -319,18 +319,23 @@ class ObAlert (object):
 
         return True
 
-    def get_media_info(self, primary_language, primary_voice, secondary_language, secondary_voice, first_nation):
+    def get_media_info(self, primary_language, primary_voice, secondary_language, secondary_voice, first_nation=False):
         if primary_language not in self.media_info:
             self.generate_audio(primary_language, primary_voice)
         if secondary_language and secondary_language not in self.media_info:
             self.generate_audio(secondary_language, secondary_voice)
-        if first_nation and first_nation not in self.media_info:
+        if first_nation != None and first_nation not in self.media_info:
             self.generate_audio('first_nation', primary_voice)
         if primary_language not in self.media_info or self.media_info[primary_language] is None:
             return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
-            'first_nation' : self.media_info[first_nation] if first_nation else None }
+            'first_nation' : self.media_info['first_nation']}
+        if self.media_info['first_nation'] is None:
+            return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
+            'first_nation' : None }
+        #return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
+        #'first_nation' : self.media_info['first_nation'] if first_nation else None }
         return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
-        'first_nation' : self.media_info[first_nation] if first_nation else None }
+        'first_nation' : self.media_info['first_nation']}
     
     def write_first_nations_file(self, path, message_text):
         #print('first nation (debug) message text: {0}'.format(message_text))
