@@ -332,11 +332,19 @@ class ObAlert (object):
         return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
         'first_nation' : self.media_info[first_nation] if first_nation else None }
     
-    def write_first_nations_file(self, path, event):
+    def write_first_nations_file(self, path, message_text):
+        #print('first nation (debug) message text: {0}'.format(message_text))
+        #time.sleep(20)
         proc = subprocess.Popen([ 'espeak', '-m', '--stdout' ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        for first_nation in self.info.first_nations:
-            message_text =+ '<audio src="data\/first_nations\/{0}\/{1}.wav"></audio>'.format(first_nation.lower(), event.lower())
-        (stdout, stderr) = proc.communicate(b"...<break time=\"2s\" /> " + message_text + b" <break time=\"2s\" /> " + message_text + b" <break time=\"3s\" /> ")
+        #for first_nation in self.info.first_nations:
+            #Check for file for message in each first nation language.
+            #Skip language and log if no file for the message.
+            #filename = "data/first_nations/{0}/{1}.wav".format(first_nation.lower(), self.info.event.lower())
+            #if os.path.isfile(filename):
+                #message_text =+ '<audio src="data/first_nations/{0}/{1}.wav"></audio>'.format(first_nation.lower(), event.lower())
+            #else:
+            #    ob.ObLog.log('first nation language: {0} files wasn\'t found. Skiping language.'.format(first_nation.lower()), 'error')
+        (stdout, stderr) = proc.communicate(b"...<break time=\"2s\" />" + message_text.encode() + b"<break time=\"2s\" />" + message_text.encode() + b"<break time=\"3s\" /> ")
         proc.wait()
 
         with open(path, 'wb') as f:
