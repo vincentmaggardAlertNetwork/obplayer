@@ -555,37 +555,65 @@ class ObAlertInfo (object):
     def get_resources(self, typename=None):
         return [ resource for resource in self.resources if not typename or typename in resource.mimetype ]
 
-    def get_message_text(self, truncate=False):
+    def get_message_text(self, truncate=False, first_nation=False):
+        if first_nation: self.language = 'first_nation'
         text = self.get_parameter("layer:SOREM:1.0:Broadcast_Text")
-        if not text:
+        if not text or self.language == 'first_nation':
             #text = self.description if self.description else self.headline
             # CLF Guide 1.2: Appendix D, Section 2.2
             sender = ' ' + self.sender if self.sender else ''
             areadesc = ' ' + ', '.join([ area.description for area in self.areas ])
-            geocodes = [ area.geocodes for area in self.areas ]
+            #geocodes = [area.geocodes for area in self.areas]
+            # for sgc_group in sgcs:
+            #     #print(sgc_group)
+            #     for sgc in sgc_group:
+            output_geocodes = []
+            # for geocode_group in geocodes:
+            #     for geocode in geocode_group:
+            #         #print(geocode[0])
+            #         if geocode[0] == 'FIPS6' or geocode[0] == 'SAME' or geocode[0] == 'profile:CAP-CP:Location:0.3':
+            #             #print(geocode[1])
+            #             output_geocodes.append(geocode[1])
+            for area in self.areas:
+                output_geocodes = area.get_sgcs() + output_geocodes
+            output_geocodes = list(dict.fromkeys(output_geocodes))
+            #print(type(output_geocodes))
+            #time.sleep(20)
+            self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(output_geocodes)
+            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
             description = '. ' + self.description if self.description else ''
             instruction = '. ' + self.instruction if self.instruction else ''
             event = ' ' + self.event if self.event else ''
-            self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(geocodes)
-            obplayer.Log.log('Locations Data: ' + str(geocodes), 'alerts')
-            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+            #self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(geocodes)
+            #obplayer.Log.log('Locations Data: ' + str(geocodes), 'alerts')
+            #obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
             if self.event == "test":
                event = 'Test Alert'
             if self.language == 'fr-CA':
                 text = 'Alerte' + sender + ' - ' + 'Alerte ' + event + areadesc +  instruction
             elif self.language == 'first_nation':
-                self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(geocodes)
-                obplayer.Log.log('First Nation Data: ' + str(first_nations), 'alerts')
-                for first_nation in first_nations:
-                    message_text = '<audio src="data/first_nations/{0}/{1}">'.format(first_nation.lower(), event.lower())
+                self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(output_geocodes)
+                #print(self.first_nations)
+                obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+                for first_nation in self.first_nations:
+                    message_text = '<audio src="{0}/first_nations/{1}/{2}.wav">'.format(obplayer.Config.datadir, first_nation.lower(), self.event.lower())
+                text = message_text
             else:
-                text = 'Message From' + sender + '. ' + event + ' For ' + areadesc + description + instruction
-
-        if sys.version.startswith('3'):
-            import html
-            text = html.unescape(text)
-        else:
-            text = text.replace('&apos;', "\'").replace('&quot;', '\"').replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<').replace('&#xA;', '\n')
+               text = 'Message From' + sender + '. ' + event + ' For ' + areadesc + description + instruction
+        # Always must be First Nations alert audio
+        if self.language == 'first_nation':
+            self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(output_geocodes)
+            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+            for first_nation in self.first_nations:
+                print(first_nation)
+                message_text = '<audio src="{0}/first_nations/{1}/{2}.wav">'.format(obplayer.Config.datadir, first_nation.lower(), self.event.lower())
+            text = message_text
+        if self.language != 'first_nation':
+            if sys.version.startswith('3'):
+                import html
+                text = html.unescape(text)
+            else:
+                text = text.replace('&apos;', "\'").replace('&quot;', '\"').replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<').replace('&#xA;', '\n')
 
         if truncate:
             parts = text.split('\n\n', 1)
