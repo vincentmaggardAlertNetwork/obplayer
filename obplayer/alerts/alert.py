@@ -150,7 +150,7 @@ class ObAlert (object):
             elif xml_get_first_tag_value(alert, 'code') == 'IPAWSv1.0':
                 self.profile = 'IPAWS-CAP'
             else:
-                self.profile = None
+                self.profile = 'CP-CA'
             self.identifier = xml_get_first_tag_value(alert, 'identifier')
             self.sender = xml_get_first_tag_value(alert, 'sender')
             self.sent = xml_get_first_tag_value(alert, 'sent')
