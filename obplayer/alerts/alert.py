@@ -252,7 +252,7 @@ class ObAlert (object):
                 return val
         return None
 
-    def generate_audio(self, language, voice=None, first_nation=False, event=None):
+    def generate_audio(self, language, voice=None, first_nation=False):
         info = self.get_first_info(language, bestmatch=False)
         if first_nation == False:
             if info is None:
@@ -265,6 +265,7 @@ class ObAlert (object):
         message_text = info.get_message_text(truncate)
 
         # TODO there needs to be a better way to get the datadir
+        uri = obplayer.Player.file_uri(location, filename)
         if first_nation == False:
             location = obplayer.ObData.get_datadir() + "/alerts"
             if os.access(location, os.F_OK) == False:
@@ -283,8 +284,9 @@ class ObAlert (object):
             else:
                 return False
         else:
-            write_first_nations_file(os.path.join(location, filename), event.lower())
-
+            self.write_first_nations_file(os.path.join(location, filename), self.get_first_info('first_nation', bestmatch=True).get_message_text(False, True))
+            message_text = self.get_first_info(language, bestmatch=True).get_message_text(False)
+            uri = obplayer.Player.file_uri(location, filename)
         d = GstPbutils.Discoverer()
         mediainfo = d.discover_uri(uri)
 
