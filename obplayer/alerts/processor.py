@@ -481,7 +481,10 @@ class ObAlertProcessor (object):
                             self.trigger_alert_cycle_init()
 
                             for alert in self.sort_by_importance(self.alerts_active.values()):
-                                alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary)
+                                if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
+                                    alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary, True)
+                                else:
+                                    alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary)
                                 if alert_media['primary']:
                                     alert.times_played += 1
 
