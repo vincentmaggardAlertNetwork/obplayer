@@ -291,14 +291,24 @@ class ObAlert (object):
         mediainfo = d.discover_uri(uri)
 
         self.media_info[language] = { }
-        self.media_info[language]['audio'] = {
-            'media_type' : 'audio',
-            'artist' : 'Emergency Alert',
-            'title' : str(self.identifier),
-            'overlay_text' : message_text,
-            'uri' : uri,
-            'duration' : (mediainfo.get_duration() / float(Gst.SECOND))
-        }
+        if first_nation:
+            self.media_info[language]['audio'] = {
+                'media_type' : 'audio',
+                'artist' : 'Emergency Alert',
+                'title' : str(self.identifier),
+                'overlay_text' : 'A alert is in effect.',
+                'uri' : uri,
+                'duration' : (mediainfo.get_duration() / float(Gst.SECOND))
+            }
+        else:
+            self.media_info[language]['audio'] = {
+                'media_type' : 'audio',
+                'artist' : 'Emergency Alert',
+                'title' : str(self.identifier),
+                'overlay_text' : message_text,
+                'uri' : uri,
+                'duration' : (mediainfo.get_duration() / float(Gst.SECOND))
+            }
 
         # the NPAS Common Look and Feel guide states that audio content should not be more than 120 seconds
         if self.media_info[language]['audio']['duration'] > 120.0:
