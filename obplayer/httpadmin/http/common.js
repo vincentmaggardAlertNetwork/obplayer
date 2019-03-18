@@ -729,4 +729,21 @@ $(document).ready(function()
     }, 'json');
   });
 
+  $('.audio-override-btn').click(function (e) {
+    const btn = $('.audio-override-btn');
+    const action = btn.text();
+    if (action == 'Start') {
+      btn.text('Stop');
+      $.post('/inter_station_ctrl/start', {}, function (response) {
+        console.log(response);
+      });
+    } else {
+      $.post('/inter_station_ctrl/stop', {}, function (response) {
+        console.log(response);
+      });
+      btn.text('Start');
+    }
+    console.log($('.audio-override-btn').html());
+  })
+
 });
