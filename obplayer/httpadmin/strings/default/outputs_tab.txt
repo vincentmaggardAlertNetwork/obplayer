@@ -13,6 +13,7 @@ Outputs Tab
   audio_out_shout2send_port_stream_one: Shoutcast Port (Stream one)
   audio_out_shout2send_mount_stream_one: Shoutcast Mountpoint (Stream one)
   audio_out_shout2send_password_stream_one: Shoutcast Password (Stream one)
+  station_override: Stream linein to other stations
   audio_out_visualization: Enable Audio Visualization
   gst_init_callback: Gstreamer Init Callback
   audiolog_enable: Enable Audio Logging
