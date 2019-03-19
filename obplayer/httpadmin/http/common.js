@@ -733,17 +733,23 @@ $(document).ready(function()
     const btn = $('.audio-override-btn');
     const action = btn.text();
     if (action == 'Start') {
-      btn.text('Stop');
-      $.post('/inter_station_ctrl/start', {}, function (response) {
-        console.log(response);
+      $.post('/inter_station_ctrl/start', {}, function (response, status) {
+        if (status == 'success') {
+            btn.text('Stop');
+        } else {
+          $('#notice').text(Site.t('Responses', 'linein_override_failed_action')).show();
+        }
       });
     } else {
-      $.post('/inter_station_ctrl/stop', {}, function (response) {
-        console.log(response);
+      $.post('/inter_station_ctrl/stop', {}, function (response, status) {
+        if (status == 'success') {
+          btn.text('Start');
+        } else {
+          $('#notice').text(Site.t('Responses', 'linein_override_failed_action')).show();
+        }
       });
-      btn.text('Start');
     }
-    console.log($('.audio-override-btn').html());
+    //console.log($('.audio-override-btn').html());
   })
 
 });
