@@ -20,6 +20,7 @@ Outputs Tab
   station_override_server_password: Streaming server password
   station_override_server_mountpoint: Streaming server mountpoint
   station_override_server_bitrate: Streaming server bitrate
+  station_override_enabled: Enable other stations to take over this one.
   gst_init_callback: Gstreamer Init Callback
   audiolog_enable: Enable Audio Logging
   offair_audiolog_enable: Enable Off Air Audio Logging
