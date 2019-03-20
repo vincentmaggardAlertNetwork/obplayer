@@ -280,6 +280,11 @@
   	    <td><%= obplayer.Config.setting('aoip_in_uri') %></td>
   	  </tr>
 
+      <tr class="padding">
+        <td data-t>station_override_enabled</td>
+        <td><%= obplayer.Config.setting('station_override_enabled') %></td>
+      </tr>
+
   	  <tr class="padding">
   	    <td data-t>rtp_in_enable</td>
   	    <td><%= obplayer.Config.setting('rtp_in_enable') %></td>
@@ -1198,49 +1203,6 @@
                 <td><input type="checkbox" name="audio_out_visualization" value="1"<%= obplayer.HTTPAdmin.form_item_checked('audio_out_visualization') %>></td>
               </tr>
               <tr>
-                <td data-t>station_override</td>
-                <td><button type="button" name="button" class="audio-override-btn">Start</button></td>
-              </tr>
-              <tr>
-                <td data-t>station_override_server_ip</td>
-                <td><input type="text" name="station_override_server_ip" value=""></td>
-              </tr>
-              <tr>
-                <td data-t>station_override_server_port</td>
-                <td><input type="text" name="station_override_server_port" value=""></td>
-              </tr>
-              <tr>
-                <td data-t>station_override_server_password</td>
-                <td><input type="text" name="station_override_server_password" value=""></td>
-              </tr>
-              <tr>
-                <td data-t>station_override_server_mountpoint</td>
-                <td><input type="text" name="station_override_server_mountpoint" value=""></td>
-              </tr>
-              <tr>
-                <td data-t>station_override_server_bitrate</td>
-                <td><select name="station_override_server_bitrate">
-                    <option value="0"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','0') %>>Variable</option>
-                    <option value="8"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','8') %>>8 kbps</option>
-                    <option value="16"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','16') %>>16 kbps</option>
-                    <option value="24"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','24') %>>24 kbps</option>
-                    <option value="32"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','32') %>>32 kbps</option>
-                    <option value="40"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','40') %>>40 kbps</option>
-                    <option value="48"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','48') %>>48 kbps</option>
-                    <option value="56"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','56') %>>56 kbps</option>
-                    <option value="64"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','64') %>>64 kbps</option>
-                    <option value="80"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','80') %>>80 kbps</option>
-                    <option value="96"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','96') %>>96 kbps</option>
-                    <option value="112"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','112') %>>112 kbps</option>
-                    <option value="128"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','128') %>>128 kbps</option>
-                    <option value="160"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','160') %>>160 kbps</option>
-                    <option value="192"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','192') %>>192 kbps</option>
-                    <option value="224"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','224') %>>224 kbps</option>
-                    <option value="256"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','256') %>>256 kbps</option>
-                    <option value="320"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','320') %>>320 kbps</option>
-                  </select></td>
-              </tr>
-              <tr>
                 <td data-t>gst_init_callback</td>
                 <td><input type="text" name="gst_init_callback" value="<%= obplayer.Config.setting('gst_init_callback',False) %>"></td>
               </tr>
@@ -1469,6 +1431,58 @@
           <% if hasattr(obplayer, 'pulse') and obplayer.pulse.is_loaded() and obplayer.Config.setting('audio_out_mode') == 'pulse': %>
             <% py.include("obplayer/pulse/views/sinks.pyhtml") %>
           <% end %>
+
+          <h4 data-t>Override settings</h4>
+
+          <table class="settings">
+            <tr>
+              <td data-t>station_override_enabled</td>
+              <td><input type="checkbox" name="station_override_enabled" value=""></td>
+            </tr>
+            <tr>
+              <td data-t>station_override</td>
+              <td><button type="button" name="button" class="audio-override-btn">Start</button></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_server_ip</td>
+              <td><input type="text" name="station_override_server_ip" value=""></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_server_port</td>
+              <td><input type="text" name="station_override_server_port" value=""></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_server_password</td>
+              <td><input type="text" name="station_override_server_password" value=""></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_server_mountpoint</td>
+              <td><input type="text" name="station_override_server_mountpoint" value=""></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_server_bitrate</td>
+              <td><select name="station_override_server_bitrate">
+                  <option value="0"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','0') %>>Variable</option>
+                  <option value="8"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','8') %>>8 kbps</option>
+                  <option value="16"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','16') %>>16 kbps</option>
+                  <option value="24"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','24') %>>24 kbps</option>
+                  <option value="32"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','32') %>>32 kbps</option>
+                  <option value="40"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','40') %>>40 kbps</option>
+                  <option value="48"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','48') %>>48 kbps</option>
+                  <option value="56"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','56') %>>56 kbps</option>
+                  <option value="64"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','64') %>>64 kbps</option>
+                  <option value="80"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','80') %>>80 kbps</option>
+                  <option value="96"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','96') %>>96 kbps</option>
+                  <option value="112"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','112') %>>112 kbps</option>
+                  <option value="128"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','128') %>>128 kbps</option>
+                  <option value="160"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','160') %>>160 kbps</option>
+                  <option value="192"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','192') %>>192 kbps</option>
+                  <option value="224"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','224') %>>224 kbps</option>
+                  <option value="256"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','256') %>>256 kbps</option>
+                  <option value="320"<%= obplayer.HTTPAdmin.form_item_selected('station_override_server_bitrate','320') %>>320 kbps</option>
+                </select></td>
+            </tr>
+          </table>
 
           <h4 data-t>Video Output Settings</h4>
 
