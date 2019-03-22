@@ -173,7 +173,7 @@ class ObRTP_2InputPipeline (ObGstPipeline):
     def message_handler_rtp(self, bus, message):
         #print(message.type)
         if message.type == Gst.MessageType.ERROR:
-            obplayer.Log.log("test: attempting to restart pipeline", 'info')
+            obplayer.Log.log("attempting to restart pipeline", 'info')
             GObject.timeout_add(1.0, self.restart_pipeline)
 
     def restart_pipeline(self):
