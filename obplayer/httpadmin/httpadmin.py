@@ -33,13 +33,13 @@ import subprocess
 
 
 from obplayer.httpadmin import httpserver
+from obplayer.streamer.linein import ObLineinIcecastStreamer
 
 
 class ObHTTPAdmin (httpserver.ObHTTPServer):
     def __init__(self):
         self.root = 'obplayer/httpadmin/http'
 
-        print(obplayer.Config)
         self.username = obplayer.Config.setting('http_admin_username')
         self.password = obplayer.Config.setting('http_admin_password')
         self.readonly_username = obplayer.Config.setting('http_readonly_username')
@@ -109,6 +109,8 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         self.route('/pulse/mute', self.req_pulse_mute, 'admin')
         self.route('/pulse/select', self.req_pulse_select, 'admin')
         self.route('/import_leadin_audio', self.req_import_leadin_audio, 'admin')
+        self.route('/inter_station_ctrl/start', self.req_start_inter_station_ctrl, 'admin')
+        self.route('/inter_station_ctrl/stop', self.req_stop_inter_station_ctrl, 'admin')
 
     def req_status_info(self, request):
         proc = subprocess.Popen([ "uptime", "-p" ], stdout=subprocess.PIPE)
@@ -147,6 +149,27 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
         else:
             res.send_content('text/plain', '')
             return res
+
+    def req_start_inter_station_ctrl(self, request):
+        res = httpserver.Response()
+        try:
+            obplayer.LineinStreamer = ObLineinIcecastStreamer(obplayer.Config.setting('station_override_server_ip'), obplayer.Config.setting('station_override_server_port'),
+            obplayer.Config.setting('station_override_server_password'), obplayer.Config.setting('station_override_server_mountpoint'), '', '', '', False, 128)
+            obplayer.LineinStreamer.start()
+        except Exception as e:
+                raise e
+        res.send_content('text/plain', '')
+        return res
+
+    def req_stop_inter_station_ctrl(self, request):
+        res = httpserver.Response()
+        try:
+            obplayer.LineinStreamer.quit()
+        except Exception as e:
+                res.send_content(500, 'text/plain', '500 error')
+                return res
+        res.send_content('text/plain', '')
+        return res
 
     def req_alert_list(self, request):
         if hasattr(obplayer, 'alerts'):
