@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with OpenBroadcaster Player.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 from .base import ObGstPipeline
 from .breakbin import ObBreakPipeline
@@ -32,4 +32,5 @@ from .rtsp import ObRTSPInputPipeline
 #from .rtspa import ObRTSPAInputPipeline
 from .sdp import ObSDPInputPipeline
 from .testsignal import ObTestSignalPipeline
-
+#from .stream_input import ObTestSignalPipeline
+from .rtp_2 import ObRTP_2InputPipeline
