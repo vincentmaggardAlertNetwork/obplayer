@@ -46,7 +46,7 @@ class ObRTP_2InputPipeline (ObGstPipeline):
         self.prequeue = Gst.ElementFactory.make('queue2', name  + '-pre-queue')
         self.elements.append(self.prequeue)
 
-        encoding = 'L16'
+        encoding = 'OPUS'
 
         if encoding == 'OPUS':
             self.rtpdepay = Gst.ElementFactory.make('rtpopusdepay', name  + '-depay')
@@ -107,10 +107,10 @@ class ObRTP_2InputPipeline (ObGstPipeline):
         address = obplayer.Config.setting('rtp_in_address')
         self.udpsrc_rtp = Gst.ElementFactory.make('udpsrc', name + '-udp-rtp')
         self.udpsrc_rtp.set_property('port', 5000)
-        self.udpsrc_rtp.set_property('address', '127.0.0.1')
+        self.udpsrc_rtp.set_property('address', '239.255.255.255')#127.0.0.1
         #self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,payload=96,media=audio,clock-rate=48000,encoding-name=OPUS"))
         #self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,media=audio,channels=2,clock-rate=44100,encoding-name=L16"))
-        self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,payload=96,media=audio,channels=2,clock-rate=" + str('44100') + ",encoding-name=" + str(encoding)))
+        self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,payload=97,media=audio,channels=2,clock-rate=" + str('48000') + ",encoding-name=" + str(encoding)))
         #self.udpsrc_rtp.set_property('timeout', 3000000)
         #self.elements.append(self.udpsrc_rtp)
         self.pipeline.add(self.udpsrc_rtp)
@@ -173,7 +173,7 @@ class ObRTP_2InputPipeline (ObGstPipeline):
     def message_handler_rtp(self, bus, message):
         #print(message.type)
         if message.type == Gst.MessageType.ERROR:
-            obplayer.Log.log("attempting to restart pipeline", 'info')
+            obplayer.Log.log("test: attempting to restart pipeline", 'info')
             GObject.timeout_add(1.0, self.restart_pipeline)
 
     def restart_pipeline(self):

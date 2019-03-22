@@ -41,10 +41,14 @@ class Streamer(obplayer.ObThread):
 
     def start_override(self, url):
         print('Starting Override...')
-        self.ffmpeg = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'pcm_s16le', '-f', 'rtp', 'rtp://localhost:5000'], stdout=subprocess.PIPE)
+        #self.ffmpeg = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'pcm_s16le', '-f', 'rtp', 'rtp://localhost:5000'], stdout=subprocess.PIPE)
+        self.ffmpeg = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'libopus', '-f', 'rtp', 'rtp://239.255.255.255:5000'], stdout=subprocess.PIPE)
+        #import os
+        #os.system(' '.join(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'pcm_s16le', '-f', 'rtp', 'rtp://239.255.255.255:5000']))
         #print(self.ffmpeg.poll())
         #self.ctrl.add_request(media_type='rtp_2', start_time=time.time() + 4, duration=153)
-        self.ctrl.add_request(media_type='rtp', start_time=time.time() + 4, duration=153, uri="rtp://localhost:5000")
+        #self.ctrl.add_request(media_type='rtp', start_time=time.time() + 4, duration=153, uri="rtp://239.255.255.255:5000")
+        self.ctrl.add_request(media_type='rtp_2', start_time=time.time() + 4, duration=153, uri="rtp://239.255.255.255:5000")
 
     def stop_override(self):
         if self.ffmpeg != None:
