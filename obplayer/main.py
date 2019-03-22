@@ -89,8 +89,8 @@ class ObMainApp:
                 self.load_module('fallback')
             if obplayer.Config.setting('aoip_in_enable'):
                 self.load_module('aoipin')
-            #if obplayer.Config.setting('rtp_in_enable'):
-            #    self.load_module('rtpin')
+            if obplayer.Config.setting('rtp_in_enable'):
+                self.load_module('rtpin')
             if obplayer.Config.setting('audio_in_enable'):
                 self.load_module('linein')
             if obplayer.Config.setting('scheduler_enable'):
