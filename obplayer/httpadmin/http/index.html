@@ -1437,7 +1437,7 @@
           <table class="settings">
             <tr>
               <td data-t>station_override_enabled</td>
-              <td><input type="checkbox" name="station_override_enabled" value=""></td>
+              <td><input type="checkbox" name="station_override_enabled" value="1" <%= obplayer.HTTPAdmin.form_item_checked('station_override_enabled') %>></td>
             </tr>
             <tr>
               <td data-t>station_override</td>
@@ -1445,19 +1445,19 @@
             </tr>
             <tr>
               <td data-t>station_override_server_ip</td>
-              <td><input type="text" name="station_override_server_ip" value=""></td>
+              <td><input type="text" name="station_override_server_ip" value="<%= obplayer.Config.setting('station_override_server_ip',True) %>"></td>
             </tr>
             <tr>
               <td data-t>station_override_server_port</td>
-              <td><input type="text" name="station_override_server_port" value=""></td>
+              <td><input type="text" name="station_override_server_port" value="<%= obplayer.Config.setting('station_override_server_port',True) %>"></td>
             </tr>
             <tr>
               <td data-t>station_override_server_password</td>
-              <td><input type="text" name="station_override_server_password" value=""></td>
+              <td><input type="password" name="station_override_server_password" value="<%= obplayer.Config.setting('station_override_server_password',True) %>"></td>
             </tr>
             <tr>
               <td data-t>station_override_server_mountpoint</td>
-              <td><input type="text" name="station_override_server_mountpoint" value=""></td>
+              <td><input type="text" name="station_override_server_mountpoint" value="<%= obplayer.Config.setting('station_override_server_mountpoint',True) %>"></td>
             </tr>
             <tr>
               <td data-t>station_override_server_bitrate</td>
