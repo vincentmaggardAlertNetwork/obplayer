@@ -41,7 +41,7 @@ class ObData (object):
 
         if os.access(cls.datadir + '/alerts', os.F_OK) == False:
             os.mkdir(cls.datadir + '/alerts')
-            
+
         if os.access(cls.datadir + '/first_nations', os.F_OK) == False:
             os.mkdir(cls.datadir + '/first_nations')
 
@@ -343,6 +343,13 @@ class ObConfigData (ObData):
         self.add_setting('streamer_youtube_enable', '0', 'bool')
         self.add_setting('streamer_youtube_key', '', 'text')
         self.add_setting('streamer_youtube_mode', '240p', 'text')
+
+        self.add_setting('station_override_server_ip', '', 'text')
+        self.add_setting('station_override_server_port', '', 'text')
+        self.add_setting('station_override_server_password', '', 'text')
+        self.add_setting('station_override_server_mountpoint', '', 'text')
+        self.add_setting('station_override_server_bitrate', '0', 'int')
+        self.add_setting('station_override_enabled', '0', 'bool')
 
         self.add_setting('scheduler_enable', '0', 'bool')
         self.add_setting('sync_device_id', '1', 'int')
