@@ -32,7 +32,7 @@ from gi.repository import GObject, Gst, GstVideo
 from .base import ObGstPipeline
 
 
-class ObRTP_2InputPipeline (ObGstPipeline):
+class ObRemoteInputPipeline (ObGstPipeline):
     min_class = [ 'audio' ]
     max_class = [ 'audio' ]
 
