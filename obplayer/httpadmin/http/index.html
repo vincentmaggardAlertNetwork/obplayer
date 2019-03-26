@@ -352,8 +352,8 @@
   	    <td><%= obplayer.Config.setting('audio_out_visualization') %></td>
   	  </tr>
       <tr>
-        <td data-t>station_override</td>
-        <td>False</td>
+        <td data-t title="station_override_tooltip">station_override</td>
+        <td></td>
       </tr>
       <tr>
         <td data-t>audio_output_volume</td>
@@ -1432,7 +1432,7 @@
             <% py.include("obplayer/pulse/views/sinks.pyhtml") %>
           <% end %>
 
-          <h4 data-t>Override settings</h4>
+          <h4 data-t title="station_override_tooltip">Override settings</h4>
 
           <table class="settings">
             <tr>
@@ -1442,6 +1442,10 @@
             <tr>
               <td data-t>station_override</td>
               <td><button type="button" name="button" class="audio-override-btn">Start</button></td>
+            </tr>
+            <tr>
+              <td data-t>station_override_monitored_streams</td>
+              <td><input type="text" name="station_override_monitored_streams" value="<%= obplayer.Config.setting('station_override_monitored_streams',True) %>"></td>
             </tr>
             <tr>
               <td data-t>station_override_server_ip</td>
