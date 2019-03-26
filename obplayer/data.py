@@ -274,6 +274,10 @@ class ObConfigData (ObData):
         if setting_name == 'location_longitude' and lng_regex.match(setting_value) == None:
             return 'location_longitude_invalid'
 
+        streams_regex = re.compile(r'^\s+$')
+        if setting_name == 'station_override_monitored_streams' and streams_regex.match(setting_value):
+            return 'station_override_monitored_streams_invalid'
+
         return None
 
     """
@@ -349,6 +353,7 @@ class ObConfigData (ObData):
         self.add_setting('station_override_server_password', '', 'text')
         self.add_setting('station_override_server_mountpoint', '', 'text')
         self.add_setting('station_override_server_bitrate', '0', 'int')
+        self.add_setting('station_override_monitored_streams', 'http://localhost:8000/local', 'text')
         self.add_setting('station_override_enabled', '0', 'bool')
 
         self.add_setting('scheduler_enable', '0', 'bool')
