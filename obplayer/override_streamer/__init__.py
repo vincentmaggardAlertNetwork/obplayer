@@ -41,8 +41,8 @@ class Streamer(obplayer.ObThread):
 
     def start_override(self, url):
         #print('Starting Override...')
-        self.ffmpeg = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'libopus', '-f', 'rtp', 'rtp://239.255.255.255:5000'], stdout=subprocess.PIPE)
-        self.ctrl.add_request(media_type='remote_audio', start_time=time.time() + 4, duration=31536000, uri="rtp://239.255.255.255:5000")
+        self.ffmpeg = subprocess.Popen(['ffmpeg', '-loglevel', 'quiet', '-re', '-i', url, '-c:a', 'libopus', '-f', 'rtp', 'rtp://127.0.0.1:5000'], stdout=subprocess.PIPE)
+        self.ctrl.add_request(media_type='remote_audio', start_time=time.time() + 4, duration=31536000, uri="rtp://127.0.0.1:5000")
 
     def stop_override(self):
         if self.ffmpeg != None:
@@ -73,21 +73,24 @@ class Streamer(obplayer.ObThread):
             return False
 
     def background(self):
-        ip = obplayer.Config.setting('station_override_server_ip')
-        port = obplayer.Config.setting('station_override_server_port')
-        mountpoint = obplayer.Config.setting('station_override_server_mountpoint')
-        stream_url = 'http://{0}:{1}/{2}'.format(ip, port, mountpoint)
+        mountpoints = obplayer.Config.setting('station_override_monitored_streams').split(',')
         while self.running:
-            if self.check_stream_status('http://{0}:{1}/status-json.xsl'.format(ip, port), stream_url):
-                #print('Override stream Found...')
-                if self.stream_active == False:
-                    self.stream_active = True
-                    self.start_override(stream_url)
-                time.sleep(6)
-            else:
-                if self.stream_active:
-                    self.stop_override()
-                self.stream_active = False
+            for mountpoint in mountpoints:
+                data = mountpoint.split(':')
+                ip = data[1].replace('//', '')
+                port = data[2].replace('//', '').split('/')[0]
+                mountpoint = data[2].replace('//', '').split('/')[1]
+                stream_url = 'http://{0}:{1}/{2}'.format(ip, port, mountpoint)
+                if self.check_stream_status('http://{0}:{1}/status-json.xsl'.format(ip, port), stream_url):
+                    #print('Override stream Found...')
+                    if self.stream_active == False:
+                        self.stream_active = True
+                        self.start_override(stream_url)
+                else:
+                    if self.stream_active:
+                        self.stop_override()
+                    self.stream_active = False
+            time.sleep(6)
 
 
     def try_run(self):
