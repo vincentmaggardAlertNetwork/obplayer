@@ -107,7 +107,8 @@ class ObRemoteInputPipeline (ObGstPipeline):
         address = obplayer.Config.setting('rtp_in_address')
         self.udpsrc_rtp = Gst.ElementFactory.make('udpsrc', name + '-udp-rtp')
         self.udpsrc_rtp.set_property('port', 5000)
-        self.udpsrc_rtp.set_property('address', '239.255.255.255')#127.0.0.1
+        #self.udpsrc_rtp.set_property('address', '239.255.255.255')#127.0.0.1
+        self.udpsrc_rtp.set_property('address', '127.0.0.1')#127.0.0.1
         #self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,payload=96,media=audio,clock-rate=48000,encoding-name=OPUS"))
         #self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,media=audio,channels=2,clock-rate=44100,encoding-name=L16"))
         self.udpsrc_rtp.set_property('caps', Gst.Caps.from_string("application/x-rtp,payload=97,media=audio,channels=2,clock-rate=" + str('48000') + ",encoding-name=" + str(encoding)))
