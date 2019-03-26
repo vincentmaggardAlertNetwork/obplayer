@@ -14,6 +14,8 @@ Outputs Tab
   audio_out_shout2send_mount_stream_one: Shoutcast Mountpoint (Stream one)
   audio_out_shout2send_password_stream_one: Shoutcast Password (Stream one)
   audio_out_visualization: Enable Audio Visualization
+  station_override_tooltip: Stream linein to other stations
+  station_override_monitored_streams: Streams in order of priority to check for override audio. separate entrys using ','
   station_override: Stream linein to other stations
   station_override_server_ip: Streaming server ip
   station_override_server_port: Streaming server port
@@ -21,6 +23,7 @@ Outputs Tab
   station_override_server_mountpoint: Streaming server mountpoint
   station_override_server_bitrate: Streaming server bitrate
   station_override_enabled: Enable other stations to take over this one.
+  station_override_monitored_streams_invalid: you must list one, or more streams!
   gst_init_callback: Gstreamer Init Callback
   audiolog_enable: Enable Audio Logging
   offair_audiolog_enable: Enable Off Air Audio Logging
