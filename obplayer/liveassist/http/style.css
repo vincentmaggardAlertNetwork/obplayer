@@ -58,7 +58,7 @@ body
 
   #main-playlist .ui-resizable-handle
   {
-    background-color: #555;    
+    background-color: #555;
   }
 
   #main-playlist-tracks
@@ -215,7 +215,7 @@ body
   {
     display: inline-block;
     line-height: normal;
-    vertical-align: middle;    
+    vertical-align: middle;
   }
 
 #main-mixer-toggle
@@ -326,10 +326,10 @@ body
   left: 0;
   height: 70px;
   border-top: 1px solid #999;
-  width: 100%; 
+  width: 100%;
 
   background-color: #333;
-  z-index: 100;   
+  z-index: 100;
 }
 
   #supfooter > *
@@ -353,6 +353,30 @@ body
   #supfooter-controls
   {
     width: 25%;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .override-btn {
+    border: 0;
+    border-radius: 6px;
+    color: #000;
+    font-size: 24px;
+    padding: 12px;
+    height: 38px;
+  }
+  
+  .override-start {
+    background-color: red;
+  }
+
+  .override-stop {
+    background-color: green;
+  }
+
+  #supfooter-controls *
+  {
+    margin-right: 6px;
   }
 
   #supfooter-track_position
@@ -470,19 +494,19 @@ body
     color: #ff4;
 }
 
-@-moz-keyframes blinker {  
+@-moz-keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
 }
 
-@-webkit-keyframes blinker {  
+@-webkit-keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }
 }
 
-@keyframes blinker {  
+@keyframes blinker {
     0% { opacity: 1.0; }
     50% { opacity: 0.5; }
     100% { opacity: 1.0; }

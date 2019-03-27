@@ -1,5 +1,31 @@
 LA = new Object();
 
+LA.station_override = function() {
+    const btn = $('.override-btn');
+    const action = btn.text();
+    if (action == 'Start') {
+      $.post('/inter_station_ctrl/start', {}, function (response, status) {
+        if (status == 'success') {
+            btn.text('Stop');
+            btn.removeClass('override-start');
+            btn.addClass('override-stop');
+        } else {
+          $('#notice').text(Site.t('Responses', 'linein_override_failed_action')).show();
+        }
+      });
+    } else {
+      $.post('/inter_station_ctrl/stop', {}, function (response, status) {
+        if (status == 'success') {
+          btn.text('Start');
+          btn.removeClass('override-start');
+          btn.addClass('override-stop');
+        } else {
+          alert('Linein override failed to run!');
+        }
+      });
+  }
+}
+
 LA.windowResize = function()
 {
   $('#main-playlist').resizable({
@@ -66,7 +92,7 @@ LA.updateShow = function()
   if(LA.updateShowLock > 0) return;
 
   // waiting for 3 things to complete before we are allowed to run again.
-  LA.updateShowLock = 4; 
+  LA.updateShowLock = 4;
 
   setTimeout(function()
   {
@@ -91,7 +117,7 @@ LA.updateShow = function()
       var count = 0;
       $(response).each(function(index,track)
       {
-        $('#main-playlist-tracks').append('<div class="track" id="track-'+count+'"></div>');     
+        $('#main-playlist-tracks').append('<div class="track" id="track-'+count+'"></div>');
 
         var $track = $('#track-'+count);
 
@@ -131,7 +157,7 @@ LA.updateShow = function()
       $(response).each(function(index,group)
       {
 
-        $('#main-buttons > div').append('<ul class="column" id="group-'+group_count+'"></ul>');     
+        $('#main-buttons > div').append('<ul class="column" id="group-'+group_count+'"></ul>');
 
         var $group = $('#group-'+group_count);
 
@@ -371,7 +397,7 @@ LA.tick = function()
     LA.currentTrackEnd=0;
     LA.updateStatus();
 
-    return; 
+    return;
   }
 
   // waiting for track to update.
@@ -390,7 +416,7 @@ LA.tick = function()
   if(LA.currentTrackNumber>=0 && LA.currentPlayMode)
   {
 
-    if(LA.currentPlayMode == 'playlist') 
+    if(LA.currentPlayMode == 'playlist')
       var duration = parseFloat($('#track-'+LA.currentTrackNumber).attr('data-duration'));
 
     else
@@ -409,7 +435,7 @@ LA.tick = function()
 
     var slider_val = time*100/duration;
   }
-  else 
+  else
   {
     $('#info-track_time').text('00:00/00:00');
     $('#info-track_remaining').text('00:00');
@@ -423,7 +449,7 @@ LA.tick = function()
   // update remaining times
 
   // update slider, time on track
- 
+
 }
 
 // convert seconds to friendly duration
@@ -556,4 +582,3 @@ $(function() {
 
   LA.init();
 });
-
