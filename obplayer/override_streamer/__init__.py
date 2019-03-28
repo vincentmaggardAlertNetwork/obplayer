@@ -73,22 +73,42 @@ class Streamer(obplayer.ObThread):
             return False
 
     def background(self):
+        streams = []
+        current_priority = 0
         mountpoints = obplayer.Config.setting('station_override_monitored_streams').split(',')
+        for i, mountpoint in enumerate(mountpoints):
+            data = mountpoint.split(':')
+            ip = data[1].replace('//', '')
+            port = data[2].replace('//', '').split('/')[0]
+            mountpoint = data[2].replace('//', '').split('/')[1]
+            stream_url = 'http://{0}:{1}/{2}'.format(ip, port, mountpoint)
+            streams.append({
+                'ip': ip,
+                'port': port,
+                'mountpoint': mountpoint,
+                'stream_url': stream_url,
+                'priority': i
+            })
+        print(streams)
         while self.running:
-            for mountpoint in mountpoints:
-                data = mountpoint.split(':')
-                ip = data[1].replace('//', '')
-                port = data[2].replace('//', '').split('/')[0]
-                mountpoint = data[2].replace('//', '').split('/')[1]
-                stream_url = 'http://{0}:{1}/{2}'.format(ip, port, mountpoint)
+            for stream in streams:
+                ip = stream['ip']
+                port = stream['port']
+                mountpoint = stream['port']
+                stream_url = stream['stream_url']
+                stream_priority = stream['priority']
                 if self.check_stream_status('http://{0}:{1}/status-json.xsl'.format(ip, port), stream_url):
                     #print('Override stream Found...')
                     if self.stream_active == False:
                         self.stream_active = True
-                        self.start_override(stream_url)
+                        # Check if stream check override already active remote stream.
+                        if current_priority >= stream_priority:
+                            self.start_override(stream_url)
+                            current_priority = stream_priority
                 else:
                     if self.stream_active:
                         self.stop_override()
+                        current_priority = 0
                     self.stream_active = False
             time.sleep(6)
 
