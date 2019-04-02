@@ -32,6 +32,8 @@ Dependencies are Debian/Ubuntu package names.
 - gstreamer1.0-plugins-bad
 - gstreamer1.0-plugins-ugly
 
+- ffmpeg
+
 - ubuntu-restricted-addons
 - ubuntu-restricted-extras
 
