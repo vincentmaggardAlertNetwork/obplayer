@@ -161,15 +161,16 @@ class ObAlert (object):
             self.references = [ ref.split(',') for ref in xml_get_first_tag_value(alert, 'references', default="").split() ]
             self.info = [ ]
             for node in xml_get_tags(alert, 'info'):
-                self.info.append(ObAlertInfo(node))
+                self.info.append(ObAlertInfo(node, False))
 
-            # Check for first nations broadcast settings
+            # # Check for first nations broadcast settings
             if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
                 for node in xml_get_tags(alert, 'info'):
                     self.info.append(ObAlertInfo(node, True))
                     break
                 #self.info.append(ObAlertInfo(xml_get_tags(alert, 'info')[0], True))
-
+            # for info in self.info:
+            #     print(info.language)
 
             self.signatures = [ ]
             for signature in xml_get_tags(alert, 'Signature'):
@@ -253,26 +254,46 @@ class ObAlert (object):
         return None
 
     def generate_audio(self, language, voice=None, first_nation=False):
+        print('TEST: {0}'.format(language))
+        # if language == 'eng': language = 'en-CA'
+        # elif language == 'fr': language = 'fr-CA'
+        #print('first_nation = {0}'.format(first_nation))
+        # if language == 'first_nation':
+        #     first_nation = True
+        # else:
+        #     first_nation = False
+        #print('Language: ' + str(self.lang_ref(language)))
+        #info = self.get_first_info(self.lang_ref(language), bestmatch=False)
         info = self.get_first_info(language, bestmatch=False)
+        #print(info.get_message_text(False))
+        #print(self.get_first_info('en-CA', bestmatch=False))
+        #time.sleep(20)
+        if info is None:
+            self.media_info[language] = None
+            return False
+        if first_nation == True:
+            #print("First Nation Text: " + self.get_first_info('first_nation', bestmatch=True).get_message_text(False, True))
+            #message_text = self.get_first_info('first_nation', bestmatch=True).get_message_text(False, True)
+            # over writting for cg scroll text and logging. TODO: shoud be first nation text here.
+            cg_message_text = self.get_first_info('english', bestmatch=True).get_message_text(False)
+            #print(cg_message_text)
+            #time.sleep(20)
+            #print("First Nation Text: " + message_text)
+            #time.sleep(20)
         if first_nation == False:
-            if info is None:
-                self.media_info[language] = None
-                return False
-        else:
-            info = self.get_first_info(language, bestmatch=True)
-
-        truncate = not self.broadcast_immediately() and obplayer.Config.setting('alerts_truncate')
-        message_text = info.get_message_text(truncate)
+            truncate = not self.broadcast_immediately() and obplayer.Config.setting('alerts_truncate')
+            message_text = info.get_message_text(truncate)
+            print(message_text)
+        # print(message_text)
+        # time.sleep(20)
 
         # TODO there needs to be a better way to get the datadir
+        location = obplayer.ObData.get_datadir() + "/alerts"
+        filename = self.reference(self.sent, self.identifier) + "-" + language + ".wav"
         uri = obplayer.Player.file_uri(location, filename)
+        if os.access(location, os.F_OK) == False:
+            os.mkdir(location)
         if first_nation == False:
-            location = obplayer.ObData.get_datadir() + "/alerts"
-            if os.access(location, os.F_OK) == False:
-                os.mkdir(location)
-            filename = self.reference(self.sent, self.identifier) + "-" + language + ".wav"
-            uri = obplayer.Player.file_uri(location, filename)
-
             resources = info.get_resources('audio')
             if resources:
                 if resources[0].write_file(os.path.join(location, filename)) is False:
@@ -280,13 +301,19 @@ class ObAlert (object):
 
             elif message_text:
                 self.write_tts_file(os.path.join(location, filename), message_text, voice)
-
             else:
                 return False
         else:
+            #os.system('cp first_nations/{0}/{1} {3}'.format(language.lower(), event.lower(), os.path.join(location, filename)))
+            #self.write_first_nations_file(os.path.join(location, filename), info.event.lower())
+            #print(self.get_first_info('first_nation', bestmatch=True).get_message_text(False, True))
             self.write_first_nations_file(os.path.join(location, filename), self.get_first_info('first_nation', bestmatch=True).get_message_text(False, True))
-            message_text = self.get_first_info(language, bestmatch=True).get_message_text(False)
+            # over writting for cg scroll text and logging. TODO: shoud be first nation text here.
+            cg_message_text = self.get_first_info('english', bestmatch=True).get_message_text(False)
             uri = obplayer.Player.file_uri(location, filename)
+            #print(uri)
+            #time.sleep(20)
+
         d = GstPbutils.Discoverer()
         mediainfo = d.discover_uri(uri)
 
@@ -332,23 +359,58 @@ class ObAlert (object):
         return True
 
     def get_media_info(self, primary_language, primary_voice, secondary_language, secondary_voice, first_nation=False):
+        messages = []
+        print('primary_language:', primary_language)
+        print('secondary_language:', secondary_language)
         if primary_language not in self.media_info:
             self.generate_audio(primary_language, primary_voice)
         if secondary_language and secondary_language not in self.media_info:
             self.generate_audio(secondary_language, secondary_voice)
         if first_nation != None and first_nation not in self.media_info:
-            self.generate_audio('first_nation', primary_voice)
-        if primary_language not in self.media_info or self.media_info[primary_language] is None:
-            return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
-            'first_nation' : self.media_info['first_nation']}
-        if self.media_info['first_nation'] is None:
-            return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
-            'first_nation' : None }
+            self.generate_audio('first_nation', primary_voice, True)
+        primary_info = self.media_info[primary_language] if primary_language else None
+        secondary_info = self.media_info[secondary_language] if secondary_language else None
+        first_nation_info = self.media_info['first_nation'] if first_nation else None
+
+        if primary_info != None:
+            messages.append(primary_info)
+        if secondary_info != None:
+            messages.append(secondary_info)
+        if first_nation_info != None:
+            messages.append(first_nation_info)
+        return messages
+
+        # if primary_info == None:
+        #     return { 'primary': self.media_info[secondary_language], 'secondary' : None,
+        #     'first_nation' : self.media_info['first_nation'] if first_nation else None }
+        # else:
+        #     return { 'primary': self.media_info[secondary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
+        #     'first_nation' : self.media_info['first_nation'] if first_nation else None }
+
+        # # Handle if primary_language is not in message.
+        # if primary_language not in self.media_info or self.media_info[primary_language] is None:
+        #     return { 'primary': self.media_info[secondary_language], 'secondary' : None,
+        #     'first_nation' : self.media_info['first_nation'] if first_nation else None }
+        # # Handle if primary_language is not in message.
+        # elif primary_language not in self.media_info and first_nation:
+        #     return { 'primary': self.media_info['first_nation'], 'secondary' : None,
+        #     'first_nation' : None }
+        #     #return { 'primary': self.media_info[secondary_language] if primary_language else None, 'secondary' : None,
+        #     #'first_nation' : self.media_info['first_nation'] if first_nation else None }
+        # elif primary_language and secondary_language and first_nation:
+        #     return { 'primary': self.media_info[secondary_language] if primary_language else None, 'secondary' : self.media_info[secondary_language] if secondary_language else None,
+        #     'first_nation' : self.media_info['first_nation'] if first_nation else None }
+        #if primary_language not in self.media_info or self.media_info[primary_language] is None:
+            #return { 'primary' : self.media_info[secondary_language], 'secondary' : None}#,
+            #'first_nation' : self.media_info['first_nation'] if self.media_info['first_nation'] else None}
+        #if self.media_info['first_nation'] is None:
+        #    return { 'primary' : self.media_info[secondary_language], 'secondary' : None,
+        #    'first_nation' : None }
         #return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
         #'first_nation' : self.media_info['first_nation'] if first_nation else None }
-        return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
-        'first_nation' : self.media_info['first_nation']}
-    
+        #return { 'primary': self.media_info[primary_language], 'secondary' : self.media_info[secondary_language] if secondary_language else None,
+        #'first_nation' : self.media_info['first_nation']}
+
     def write_first_nations_file(self, path, message_text):
         #print('first nation (debug) message text: {0}'.format(message_text))
         #time.sleep(20)
@@ -415,7 +477,7 @@ class ObAlert (object):
             proc.wait()
 
             with open(path, 'wb') as f:
-                f.write(stdout) 
+                f.write(stdout)
 
     @staticmethod
     def reference(timestamp, identifier):
@@ -426,6 +488,8 @@ class ObAlert (object):
     @staticmethod
     def lang_ref(language):
         if language == 'english':
+            return 'en-CA'
+        elif language == 'first_nation':
             return 'en-CA'
         elif language == 'french':
             return 'fr-CA'
@@ -511,6 +575,7 @@ class ObAlertInfo (object):
             self.language = 'first_nations'
         else:
             self.language = xml_get_first_tag_value(info, 'language', 'en-US')
+            print(self.language)
         self.event = xml_get_first_tag_value(info, 'event')
         self.urgency = xml_get_first_tag_value(info, 'urgency')
         self.severity = xml_get_first_tag_value(info, 'severity')
@@ -545,7 +610,8 @@ class ObAlertInfo (object):
         self.areas = [ ]
         for node in xml_get_tags(info, 'area'):
             self.areas.append(ObAlertArea(node))
-
+        for area in self.areas:
+            print(area.get_sgcs())
         self.resources = [ ]
         for node in xml_get_tags(info, 'resource'):
             self.resources.append(ObAlertResource(node))
@@ -592,7 +658,7 @@ class ObAlertInfo (object):
             #print(type(output_geocodes))
             #time.sleep(20)
             self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(output_geocodes)
-            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+            #obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
             description = '. ' + self.description if self.description else ''
             instruction = '. ' + self.instruction if self.instruction else ''
             event = ' ' + self.event if self.event else ''
@@ -615,17 +681,17 @@ class ObAlertInfo (object):
         # Always must be First Nations alert audio
         if self.language == 'first_nation':
             self.first_nations = ObAlert.get_first_nations_languages_by_sgcs(output_geocodes)
-            obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
+            #obplayer.Log.log('First Nation Data: ' + str(self.first_nations), 'alerts')
             for first_nation in self.first_nations:
                 print(first_nation)
                 message_text = '<audio src="{0}/first_nations/{1}/{2}.wav">'.format(obplayer.Config.datadir, first_nation.lower(), self.event.lower())
             text = message_text
-        if self.language != 'first_nation':
-            if sys.version.startswith('3'):
-                import html
-                text = html.unescape(text)
-            else:
-                text = text.replace('&apos;', "\'").replace('&quot;', '\"').replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<').replace('&#xA;', '\n')
+        #if self.language != 'first_nation':
+        if sys.version.startswith('3'):
+            import html
+            text = html.unescape(text)
+        else:
+            text = text.replace('&apos;', "\'").replace('&quot;', '\"').replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<').replace('&#xA;', '\n')
 
         if truncate:
             parts = text.split('\n\n', 1)
@@ -638,10 +704,14 @@ class ObAlertInfo (object):
 class ObAlertArea (object):
     def __init__(self, element):
         self.parse_area(element)
-    @staticmethod
-    def get_sgcs():
+
+    def get_sgcs(self, type=None):
+        output = []
         if self.geocodes != None:
-            return self.geocodes
+            for geocode in self.geocodes:
+                if geocode[0] == 'SAME' or geocode[0] == 'FIPS6' or geocode[0] == 'profile:CAP-CP:Location:0.3':
+                    output.append(geocode[1])
+            return output
         else:
             return None
 

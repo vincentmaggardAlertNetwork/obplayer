@@ -46,6 +46,70 @@ if sys.version.startswith('3'):
 else:
     import urlparse
 
+class ObAlertPullFetcher (obplayer.ObThread):
+    def __init__(self, processor):
+        obplayer.ObThread.__init__(self, 'ObAlertPullFetcher')
+        self.daemon = True
+
+        self.processor = processor
+        self.socket = None
+        self.buffer = b""
+        self.receiving_data = False
+        self.last_received = 0
+        self.close_lock = threading.Lock()
+        self.fetcher_timeouts = 0
+        self.url = 'https://api.weather.gov/alerts'
+        self.feed = None
+        self.poll_server()
+
+    # poll the NWS's CAP server for alerts
+    def poll_server(self):
+        while True:
+            headers = {
+                'user-agent': 'OBPlayer',
+                'accept': 'application/atom+xml'
+            }
+            r = requests.get(self.url, headers=headers)
+            if r.status_code == 200:
+                self.feed = obplayer.alerts.alert.Feed(r.text)
+                with open('/tmp/Alert.xml', 'w') as file:
+                     file.write(r.text)
+            else:
+                obplayer.Log.log("Got error code %s polling CAP Server with URL: %s" % (r.status_code, self.url), 'alerts')
+            GObject.timeout_add(40.0, self.poll_server)
+
+    def close(self):
+        with self.close_lock:
+            obplayer.Log.log("closing the CAP server poller %s" % (self.url), 'alerts')
+            self.last_received = 0
+
+    def try_run(self):
+        while True:
+            try:
+                data = self.read_alert_data()
+                if (data):
+                    alert = obplayer.alerts.ObAlert(data)
+                    obplayer.Log.log("received alert " + str(alert.identifier) + " (" + str(alert.sent) + ")", 'debug')
+                    #alert.print_data()
+                    self.processor.dispatch(alert)
+
+                    # TODO for testing only
+                    with open(obplayer.ObData.get_datadir() + "/alerts/" + obplayer.alerts.ObAlert.reference(alert.sent, alert.identifier) + '.xml', 'wb') as f:
+                        f.write(data)
+
+            except socket.error as e:
+                obplayer.Log.log("Socket Error: " + str(e), 'error')
+                break
+
+            except:
+                obplayer.Log.log("exception in " + self.name + " thread", 'error')
+                obplayer.Log.log(traceback.format_exc(), 'error')
+        time.sleep(5)
+
+    def stop(self):
+        pass
+
+
 class ObAlertFetcher (obplayer.ObThread):
     def __init__(self, processor):
         obplayer.ObThread.__init__(self, 'ObAlertFetcher')
@@ -219,8 +283,16 @@ class ObAlertProcessor (object):
         self.repeat_times = obplayer.Config.setting('alerts_repeat_times')
         self.leadin_delay = obplayer.Config.setting('alerts_leadin_delay')
         self.leadout_delay = obplayer.Config.setting('alerts_leadout_delay')
-        self.language_primary = obplayer.Config.setting('alerts_language_primary')
-        self.language_secondary = obplayer.Config.setting('alerts_language_secondary')
+        #self.language_primary = obplayer.Config.setting('alerts_language_primary')
+        if obplayer.Config.setting('alerts_location_type') == 'US' and obplayer.Config.setting('alerts_language_primary') == 'en-CA':
+            self.language_primary = 'en-US'
+        else:
+            self.language_primary = obplayer.Config.setting('alerts_language_primary')
+        if obplayer.Config.setting('alerts_location_type') == 'US' and obplayer.Config.setting('alerts_language_secondary') == 'en-CA':
+            self.language_secondary = 'en-US'
+        else:
+            self.language_secondary = obplayer.Config.setting('alerts_language_secondary')
+        #self.language_secondary = obplayer.Config.setting('alerts_language_secondary')
         self.voice_primary = obplayer.Config.setting('alerts_voice_primary')
         self.voice_secondary = obplayer.Config.setting('alerts_voice_secondary')
 
@@ -249,8 +321,15 @@ class ObAlertProcessor (object):
         self.thread.daemon = True
         self.thread.start()
 
-        self.fetcher = ObAlertTCPFetcher(self, self.streaming_hosts)
-        self.fetcher.start()
+        if obplayer.Config.setting('alerts_location_type') == 'US':
+            self.fetcher = ObAlertPullFetcher(self)
+            self.fetcher.start()
+            ## Change Me
+            #self.fetcher = ObAlertTCPFetcher(self, self.streaming_hosts)
+            #self.fetcher.start()
+        else:
+            self.fetcher = ObAlertTCPFetcher(self, self.streaming_hosts)
+            self.fetcher.start()
 
     def dispatch(self, alert):
         with self.lock:
@@ -481,40 +560,52 @@ class ObAlertProcessor (object):
                             self.trigger_alert_cycle_init()
 
                             for alert in self.sort_by_importance(self.alerts_active.values()):
+                                #alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary)
                                 if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
                                     alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary, True)
                                 else:
                                     alert_media = alert.get_media_info(self.language_primary, self.voice_primary, self.language_secondary, self.voice_secondary)
-                                if alert_media['primary']:
+                                print(alert_media)
+                                #time.sleep(20)
+                                    #alert.times_played += 1
+                                start_time = self.ctrl.get_requests_endtime()
+                                if alert.times_played <= 1:
                                     alert.times_played += 1
-
-                                    start_time = self.ctrl.get_requests_endtime()
-                                    if alert.times_played <= 1:
-                                        if os.path.isfile(obplayer.Config.setting('alerts_alert_start_audio')) and obplayer.Config.setting('alerts_play_leadin_enable') == True:
-                                            d = GstPbutils.Discoverer()
-                                            mediainfo = d.discover_uri(obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')))
-                                            print('leadin message duration ' + str(mediainfo.get_duration() / float(Gst.SECOND)))
-                                            if mediainfo.get_duration() / float(Gst.SECOND) > 10.0:
-                                                obplayer.Log.log('alert start message is longer then 10 seconds! max allowed is 10 seconds. only playing the first 10 seconds.', 'alerts')
-                                                self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=10, artist=alert_media['primary']['audio']['artist'], title='ledin message', overlay_text=alert_media['primary']['audio']['overlay_text'])
-                                            else:
-                                                self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=mediainfo.get_duration() / float(Gst.SECOND), artist=alert_media['primary']['audio']['artist'], title='ledin message', overlay_text=alert_media['primary']['audio']['overlay_text'])
-                                        self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
-                                        # Play US/EAS attn tone
-                                        if obplayer.Config.setting('alerts_location_type') == 'US':
-                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "attention-signal.ogg"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
-                                        # Play CA/Alert Ready attn tone
+                                    if os.path.isfile(obplayer.Config.setting('alerts_alert_start_audio')) and obplayer.Config.setting('alerts_play_leadin_enable') == True:
+                                        d = GstPbutils.Discoverer()
+                                        mediainfo = d.discover_uri(obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')))
+                                        #print('leadin message duration ' + str(mediainfo.get_duration() / float(Gst.SECOND)))
+                                        if mediainfo.get_duration() / float(Gst.SECOND) > 10.0:
+                                            obplayer.Log.log('alert start message is longer then 10 seconds! max allowed is 10 seconds. only playing the first 10 seconds.', 'alerts')
+                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=10, artist=mediainfo['audio']['artist'], title='ledin message', overlay_text=mediainfo['audio']['overlay_text'])
                                         else:
-                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media['primary']['audio']['artist'], title=alert_media['primary']['audio']['title'], overlay_text=alert_media['primary']['audio']['overlay_text'])
-                                    self.ctrl.add_request(**alert_media['primary']['audio'])
-                                    if 'visual' in alert_media['primary']:
-                                        self.ctrl.add_request(start_time=start_time, **alert_media['primary']['visual'])
+                                            self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri(obplayer.Config.setting('alerts_alert_start_audio')), duration=mediainfo.get_duration() / float(Gst.SECOND), artist=mediainfo['audio']['artist'], title='ledin message', overlay_text=mediainfo['audio']['overlay_text'])
+                                    self.ctrl.add_request(media_type='break', title="alert tone delay", duration=1.0)
+                                    # Play US/EAS attn tone
+                                    if obplayer.Config.setting('alerts_location_type') == 'US':
+                                        self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "attention-signal.ogg"), duration=8, artist=alert_media[0]['audio']['artist'], title=alert_media[0]['audio']['title'], overlay_text=alert_media[0]['audio']['overlay_text'])
+                                    # Play CA/Alert Ready attn tone
+                                    else:
+                                        self.ctrl.add_request(media_type='audio', uri=obplayer.Player.file_uri("obplayer/alerts/data", "canadian-attention-signal.mp3"), duration=8, artist=alert_media[0]['audio']['artist'], title=alert_media[0]['audio']['title'], overlay_text=alert_media[0]['audio']['overlay_text'])
+                                    for mediainfo in alert_media:
+                                        self.ctrl.add_request(**mediainfo['audio'])
+                                        if 'visual' in mediainfo:
+                                           self.ctrl.add_request(start_time=start_time, **mediainfo['visual'])
 
-                                    if alert_media['secondary']:
-                                        start_time = self.ctrl.get_requests_endtime()
-                                        self.ctrl.add_request(**alert_media['secondary']['audio'])
-                                        if 'visual' in alert_media['secondary']:
-                                            self.ctrl.add_request(start_time=start_time, **alert_media['secondary']['visual'])
+
+
+
+                                    # if alert_media['secondary']:
+                                    #     start_time = self.ctrl.get_requests_endtime()
+                                    #     self.ctrl.add_request(**alert_media['secondary']['audio'])
+                                    #     if 'visual' in alert_media['secondary']:
+                                    #         self.ctrl.add_request(start_time=start_time, **alert_media['secondary']['visual'])
+                                    #
+                                    # if alert_media['first_nation']:
+                                    #     start_time = self.ctrl.get_requests_endtime()
+                                    #     self.ctrl.add_request(**alert_media['first_nation']['audio'])
+                                    #     if 'visual' in alert_media['first_nation']:
+                                    #         self.ctrl.add_request(start_time=start_time, **alert_media['first_nation']['visual'])
 
                                     self.trigger_alert_cycle_each(alert, alert_media, self)
 
@@ -538,16 +629,19 @@ class ObAlertProcessor (object):
                     """
 
                 # reset fetcher if we stop receiving heartbeats
-                if self.fetcher.last_received and time.time() - self.fetcher.last_received > 360:
-                    obplayer.Log.log("no heartbeat received for 6 min. resetting alert fetcher", 'error')
-                    self.fetcher_timeouts =+ 1
-                    # Play beep after no heartbeats for 6 minutes.
-                    if self.fetcher_timeouts > 10:
-                        os.system("play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880")
-                        # resetting timeouts count.
-                        obplayer.Log.log("no heartbeat received timedout. alerting user!", 'error')
-                        self.fetcher_timeouts = 0
-                    self.fetcher.close()
+                # check for us location settings. US CAP server don't return heartbeats in must case
+                # and never in the same format as alert ready does.
+                if obplayer.Config.setting('alerts_location_type') == 'CA':
+                    if self.fetcher.last_received and time.time() - self.fetcher.last_received > 360:
+                        obplayer.Log.log("no heartbeat received for 6 min. resetting alert fetcher", 'error')
+                        self.fetcher_timeouts =+ 1
+                        # Play beep after no heartbeats for 6 minutes.
+                        if self.fetcher_timeouts > 10:
+                            os.system("play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880; sleep 1; play -q -n synth 0.8 sin 880")
+                            # resetting timeouts count.
+                            obplayer.Log.log("no heartbeat received timedout. alerting user!", 'error')
+                            self.fetcher_timeouts = 0
+                        self.fetcher.close()
 
             except:
                 obplayer.Log.log("exception in " + self.thread.name + " thread", 'error')
