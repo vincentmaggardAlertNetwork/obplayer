@@ -42,8 +42,16 @@ class ObData (object):
         if os.access(cls.datadir + '/alerts', os.F_OK) == False:
             os.mkdir(cls.datadir + '/alerts')
 
+        # Build the folders to support first nation alert messages.
         if os.access(cls.datadir + '/first_nations', os.F_OK) == False:
             os.mkdir(cls.datadir + '/first_nations')
+        first_nations_languages = ['atikamekw', 'chipewyin', 'cree', 'demo', 'eastern-Innu', 'innu',
+        'eastern-Innu', 'innu', 'inuktitut', 'kawawachikamach-naskapi', 'mikmaq', 'moose-cree',
+        'northern-east-cree', 'ojibwe', 'plains-cree', 'southern-east-cree', 'swampy-cree', 'western-innu',
+        'woods-cree']
+        for language in first_nations_languages:
+            if os.access(cls.datadir + '/first_nations/{0}'.format(language), os.F_OK) == False:
+                os.mkdir(cls.datadir + '/first_nations/{0}'.format(language))
 
         if os.access(cls.datadir + '/audiologs', os.F_OK) == False:
             os.mkdir(cls.datadir + '/audiologs')
