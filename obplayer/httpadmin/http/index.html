@@ -126,6 +126,21 @@
   	  <div>
   	    <canvas id="audio-levels" width=200 height=20></canvas>
   	  </div>
+      <div>
+        <h3>Live Stream Audio:</h3>
+        <ul>
+          <li>
+            <h4>Stream One</h4>
+            <audio src="http://<%= obplayer.Config.setting('streamer_1_icecast_ip') %>:<%= obplayer.Config.setting('streamer_1_icecast_port') %>/<%= obplayer.Config.setting('streamer_1_icecast_mount') %>" controls type="audio/mpeg">
+          </audio>
+        </li>
+        <li>
+          <h4>Stream Two</h4>
+          <audio src="http://<%= obplayer.Config.setting('streamer_2_icecast_ip') %>:<%= obplayer.Config.setting('streamer_2_icecast_port') %>/<%= obplayer.Config.setting('streamer_2_icecast_mount') %>" controls type="audio/mpeg">
+        </audio>
+      </li>
+        </ul>
+      </div>
   	</div>
 
   	<div id="visual-summary" class="summary">
