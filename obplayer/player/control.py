@@ -84,7 +84,7 @@ class ObPlayer (object):
         self.pipes['break'] = pipes.ObBreakPipeline('audio-break', self)
         self.pipes['linein'] = pipes.ObLineInPipeline('line-input', self)
         self.pipes['rtp'] = pipes.ObRTPInputPipeline('rtp-input', self)
-        self.pipes['rtp_2'] = pipes.ObRTP_2InputPipeline('rtp-input-2', self)
+        self.pipes['remote_audio'] = pipes.ObRemoteInputPipeline('remote_audio', self)
         self.pipes['rtsp'] = pipes.ObRTSPInputPipeline('rtsp-input', self)
         #self.pipes['rtspa'] = pipes.ObRTSPAInputPipeline('rtspa-input', self)
         self.pipes['sdp'] = pipes.ObSDPInputPipeline('sdp-input', self)
