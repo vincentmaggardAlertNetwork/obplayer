@@ -52,13 +52,16 @@ class Oboff_air_AudioLog (object):
             self.sdr.sample_rate = AUDIOLOG_SAMPLE_RATE
             self.fm_feq = obplayer.Config.setting('offair_audiolog_feq')
             self.freq_correction = 60
-            self.sdr.gain = 'auto'
             #self.audio_data = []
             self.start()
 
     def start(self):
         if self.sdr == None:
             self.sdr = RtlSdr()
+            self.sdr.gain = 'auto'
+            self.sdr.freq_correction = self.freq_correction
+            self.sdr.center_freq = self.fm_feq
+            self.sdr.sample_rate = self.sdr.sample_rate
         obplayer.Log.log("starting new off-air audio log", 'offair-audiolog')
         self.outfile = obplayer.ObData.get_datadir() + '/offair-audiologs/' + time.strftime('%Y-%m-%d_%H:%M:%S') + '.wav'
         self.log_rotate()
@@ -83,7 +86,7 @@ class Oboff_air_AudioLog (object):
         self.recording = False
         if len(self.audio_data) > 0:
            self.save_audio()
-        self.sdr = None
+        self.sdr.close()
 
     def log_rotate(self):
         if self.date != time.strftime('%Y-%m-%d-%H'):
