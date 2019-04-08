@@ -38,7 +38,7 @@ AUDIOLOG_CHANNELS = '1'
 
 class Oboff_air_AudioLog (object):
     def __init__(self):
-        self.self.recording = False
+        self.recording = False
         self.purge_files = obplayer.Config.setting('audiolog_purge_files')
         self.date = time.strftime('%Y-%m-%d-%H')
         self.audio_data = []
@@ -65,7 +65,7 @@ class Oboff_air_AudioLog (object):
         self.record()
 
     def record(self):
-        self.self.recording = True
+        self.recording = True
         while self.recording:
             self.audio_data.append(self.sdr.read_samples(1024))
 
@@ -80,7 +80,7 @@ class Oboff_air_AudioLog (object):
         file.close()
 
     def stop(self):
-        self.self.recording = False
+        self.recording = False
         if len(self.audio_data) > 0:
            self.save_audio()
         self.sdr = None
