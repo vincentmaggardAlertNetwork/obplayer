@@ -56,7 +56,7 @@ h2:first-child
   text-align: right;
 }
 
-#content 
+#content
 {
   padding: 30px;
   border-left: 1px solid #2A2D79;
@@ -108,6 +108,10 @@ h2:first-child
 {
   display: inline-block;
   width: 10em;
+}
+
+#live-audio-summary {
+  margin-right: 4em;
 }
 
 #log-data
@@ -269,5 +273,3 @@ input[type="range"] {
   font-size: 0.75em;
   text-align: right;
 }
-
-
