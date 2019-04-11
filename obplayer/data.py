@@ -469,7 +469,14 @@ class ObConfigData (ObData):
         self.add_setting('location_latitude', '60.27434', 'float')
 
         self.add_setting('offair_audiolog_enable', '0', 'bool')
+        self.add_setting('offair_audiolog_icecast_ip', '', 'text')
+        self.add_setting('offair_audiolog_icecast_port', '8000', 'text')
+        self.add_setting('offair_audiolog_icecast_mountpoint', '', 'text')
+        self.add_setting('offair_audiolog_icecast_password', '', 'text')
+        self.add_setting('offair_audiolog_icecast_bitrate', '128k', 'text')
         self.add_setting('offair_audiolog_feq', '88.0', 'text')
+        self.add_setting('offair_audiolog_feq', '88.0', 'text')
+
 
         self.add_setting('led_sign_enable', '0', 'bool')
         self.add_setting('led_sign_serial_file', '/dev/ttyS1', 'text')

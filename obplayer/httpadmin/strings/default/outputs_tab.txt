@@ -31,6 +31,11 @@ Outputs Tab
   audiolog_purge_files_tooltip: Delete audio log files after 90 days.
   audiolog_bitrate: Audiolog bit rate
   offair_audiolog_feq: Radio Station Frequency
+  offair_audiolog_icecast_ip: Streaming server ip
+  offair_audiolog_icecast_port: Streaming server port
+  offair_audiolog_icecast_mountpoint: Streaming server mountpoint
+  offair_audiolog_icecast_bitrate: Streaming server bitrate
+  offair_audiolog_icecast_password: Streaming server password
 
 
   Video Output Settings: Video Output Settings

@@ -416,6 +416,26 @@
         <td data-t>audiolog_bitrate</td>
         <td><%= obplayer.Config.setting('audiolog_bitrate') %></td>
       </tr>
+      <tr>
+        <td data-t>offair_audiolog_icecast_ip</td>
+        <td><%= obplayer.Config.setting('offair_audiolog_icecast_ip') %></td>
+      </tr>
+      <tr>
+        <td data-t>offair_audiolog_icecast_port</td>
+        <td><%= obplayer.Config.setting('offair_audiolog_icecast_port') %></td>
+      </tr>
+      <tr>
+        <td data-t>offair_audiolog_icecast_mountpoint</td>
+        <td><%= obplayer.Config.setting('offair_audiolog_icecast_mountpoint') %></td>
+      </tr>
+      <tr>
+        <td data-t>offair_audiolog_icecast_password</td>
+        <td><%= obplayer.Config.setting('offair_audiolog_icecast_password') %></td>
+      </tr>
+      <tr>
+        <td data-t>offair_audiolog_icecast_bitrate</td>
+        <td><%= obplayer.Config.setting('offair_audiolog_icecast_bitrate') %></td>
+      </tr>
 
   	  <tr class="padding">
   	    <td data-t>video_out_enable</td>
@@ -1437,6 +1457,26 @@
                       <option value="107.9"<%= obplayer.HTTPAdmin.form_item_selected('offair_audiolog_feq','107.9') %> data-t>107.9</option>
                     </select>
                   </td>
+              </tr>
+              <tr>
+                <td data-t>offair_audiolog_icecast_ip</td>
+                <td><input type="text" name="offair_audiolog_icecast_ip" value=""></td>
+              </tr>
+              <tr>
+                <td data-t>offair_audiolog_icecast_mountpoint</td>
+                <td><input type="text" name="offair_audiolog_icecast_mountpoint" value=""></td>
+              </tr>
+              <tr>
+                <td data-t>offair_audiolog_icecast_password</td>
+                <td><input type="password" name="offair_audiolog_icecast_password" value=""></td>
+              </tr>
+              <tr>
+                <td data-t>offair_audiolog_icecast_bitrate</td>
+                <td><input type="password" name="offair_audiolog_icecast_bitrate" value=""></td>
+              </tr>
+              <tr>
+                <td data-t>offair_audiolog_icecast_port</td>
+                <td><input type="text" name="offair_audiolog_icecast_port" value=""></td>
               </tr>
               <tr id="audiolog_purge_files_row">
                 <td data-t>audiolog_purge_files</td>
