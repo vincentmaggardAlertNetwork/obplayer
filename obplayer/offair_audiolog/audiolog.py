@@ -31,10 +31,30 @@ import traceback
 import gi
 gi.require_version('Gst', '1.0')
 from gi.repository import GObject, Gst
-from rtlsdr import RtlSdr
+from .recorder import Recorder
 
 AUDIOLOG_SAMPLE_RATE = '22050'
 AUDIOLOG_CHANNELS = '1'
+
+# class Recorder(threading.Thread):
+#     def __init__(self, fm_feq, sample_rate):
+#         obplayer.ObThread.__init__(self, 'Oboff_air_AudioLog-Recorder')
+#         self.daemon = True
+#         self.audio_data = []
+#         self.recording = False
+#         self.process = subprocess.Popen(['rtl_fm', '-f', fm_feq, '-m', 'wbfm', '-r', sample_rate], stdout=subprocess.PIPE)
+#         self._record_audio()
+#
+#     def _record_audio(self):
+#         self.recording = True
+#         while self.recording:
+#             self.audio_data.append(self.process.read())
+#
+#     def get_audio(self):
+#         return self.audio_data
+#
+#     def stop(self):
+#         self.recording = False
 
 class Oboff_air_AudioLog (object):
     def __init__(self):
@@ -42,56 +62,39 @@ class Oboff_air_AudioLog (object):
         self.purge_files = obplayer.Config.setting('audiolog_purge_files')
         self.date = time.strftime('%Y-%m-%d-%H')
         self.audio_data = []
-        try:
-            self.sdr = RtlSdr()
-        except Exception as OSError:
-            obplayer.Log.log("Could not start off-air audio log.\n\
-            Make sure your sdr is connected.", 'offair-audiolog')
-            self.sdr = None
-        if self.sdr != None:
-            self.sdr.sample_rate = AUDIOLOG_SAMPLE_RATE
-            self.fm_feq = obplayer.Config.setting('offair_audiolog_feq')
-            self.freq_correction = 60
-            #self.audio_data = []
-            self.start()
+        self.recorder = None
+        self.start()
+        # try:
+        #     self.sdr = RtlSdr()
+        # except Exception as OSError:
+        #     obplayer.Log.log("Could not start off-air audio log.\n\
+        #     Make sure your sdr is connected.", 'offair-audiolog')
+        #     self.sdr = None
+        # if self.sdr != None:
+        #     self.sample_rate = AUDIOLOG_SAMPLE_RATE
+        #     self.fm_feq = obplayer.Config.setting('offair_audiolog_feq')
+        #     self.start()
 
     def start(self):
-        if self.sdr == None:
-            self.sdr = RtlSdr()
-            self.sdr.gain = 'auto'
-            self.sdr.freq_correction = self.freq_correction
-            self.sdr.center_freq = self.fm_feq
-            self.sdr.sample_rate = self.sdr.sample_rate
-        obplayer.Log.log("starting new off-air audio log", 'offair-audiolog')
-        self.outfile = obplayer.ObData.get_datadir() + '/offair-audiologs/' + time.strftime('%Y-%m-%d_%H:%M:%S') + '.wav'
-        self.log_rotate()
-        self.record()
-
-    def record(self):
-        self.recording = True
-        while self.recording:
-            self.audio_data.append(self.sdr.read_samples(1024))
-
-    def save_audio(self):
-        file = wave.open(self.outfile, 'wb')
-        file.set_nchannels(AUDIOLOG_CHANNELS)
-        file.setsampwidth(2)
-        file.setframerate(AUDIOLOG_SAMPLE_RATE)
-
-        for frame in self.audio_data:
-            file.write(frame)
-        file.close()
+        if self.recording == False:
+            self.outfile = obplayer.ObData.get_datadir() + '/offair-audiologs/' + time.strftime('%Y-%m-%d_%H:%M:%S') + '.wav'
+            self.recorder = Recorder(self.outfile)
+            #self.recorder.join()
+            # log that a new recording is being started.
+            obplayer.Log.log("starting new off-air audio log", 'offair-audiolog')
+            self.log_rotate()
+        else:
+            # log if already recording.
+            obplayer.Log.log("can't start new off-air audio log because already recording log.", 'offair-audiolog')
 
     def stop(self):
         self.recording = False
-        if len(self.audio_data) > 0:
-           self.save_audio()
-        self.sdr.close()
+        self.recorder.stop()
 
     def log_rotate(self):
         if self.date != time.strftime('%Y-%m-%d-%H'):
             self.date = time.strftime('%Y-%m-%d-%H')
-            self.save_audio()
+            self.stop()
             self.start()
             if self.purge_files:
                 self.log_purge()
