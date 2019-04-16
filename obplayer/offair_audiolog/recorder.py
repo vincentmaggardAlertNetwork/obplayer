@@ -20,12 +20,18 @@ class Recorder(obplayer.ObThread):
         if self.process.poll() != None:
             obplayer.Log.log("Could not start off-air audio log.\n\
             Make sure your sdr is connected.", 'offair-audiolog')
+            self.process = None
         else:
             self.ffmpeg = subprocess.Popen(['ffmpeg', '-f', 's16le', '-ar', '8000', '-i', '-', '-acodec', 'libmp3lame', '-ab', icecast_bitrate + 'k', '-ac', '1', '-content_type', 'audio/mpeg', '-f', 'mp3',
             'icecast://source:{0}@{1}/{2}'.format(icecast_password, icecast_location, icecast_mountpoint)], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            if self.ffmpeg.poll() != None:
+                obplayer.Log.log("Could not start streaming off-air audio log.\n\
+                Make sure your sdr is connected and that your icecast settings are entered.", 'offair-audiolog')
+                self.ffmpeg = None
 
     def run(self):
-        self._record_audio()
+        if self.process != None and self.ffmpeg != None:
+            self._record_audio()
 
     def _record_audio(self):
         self.recording = True
@@ -41,10 +47,13 @@ class Recorder(obplayer.ObThread):
     def stop(self):
         self.recording = False
         data = self.get_audio()
-        self.process.terminate()
-        self.ffmpeg.terminate()
-        with wave.open(self.output_file, 'wb') as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(8000)
-            wf.writeframes(data)
+        if self.process != None
+            self.process.terminate()
+        if self.ffmpeg != None
+            self.ffmpeg.terminate()
+        if data != b'':
+            with wave.open(self.output_file, 'wb') as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(8000)
+                wf.writeframes(data)
