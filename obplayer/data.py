@@ -218,6 +218,9 @@ class ObConfigData (ObData):
         if setting_name == 'streamer_icecast_bitrate' and (self.is_int(setting_value) == False or int(setting_value) not in [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]):
             return 'streamer_icecast_bitrate_invalid'
 
+        if setting_name == 'offair_audiolog_icecast_bitrate' and (self.is_int(setting_value) == False or int(setting_value) not in [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]):
+            return 'streamer_icecast_bitrate_invalid'
+
         url_regex = re.compile(
                 r'^(?:http|ftp)s?://' # http:// or https://
                 r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -469,14 +472,12 @@ class ObConfigData (ObData):
         self.add_setting('location_latitude', '60.27434', 'float')
 
         self.add_setting('offair_audiolog_enable', '0', 'bool')
-        self.add_setting('offair_audiolog_icecast_ip', '', 'text')
-        self.add_setting('offair_audiolog_icecast_port', '8000', 'text')
-        self.add_setting('offair_audiolog_icecast_mountpoint', '', 'text')
-        self.add_setting('offair_audiolog_icecast_password', '', 'text')
-        self.add_setting('offair_audiolog_icecast_bitrate', '128k', 'text')
-        self.add_setting('offair_audiolog_feq', '88.0', 'text')
-        self.add_setting('offair_audiolog_feq', '88.0', 'text')
-
+        self.add_setting('offair_audiolog_icecast_ip', 'localhost', 'text')
+        self.add_setting('offair_audiolog_icecast_port', '8000', 'int')
+        self.add_setting('offair_audiolog_icecast_mountpoint', 'fm_audio', 'text')
+        self.add_setting('offair_audiolog_icecast_password', 'hackme', 'text')
+        self.add_setting('offair_audiolog_icecast_bitrate', '128', 'int')
+        self.add_setting('offair_audiolog_feq', '88.0', 'float')
 
         self.add_setting('led_sign_enable', '0', 'bool')
         self.add_setting('led_sign_serial_file', '/dev/ttyS1', 'text')
