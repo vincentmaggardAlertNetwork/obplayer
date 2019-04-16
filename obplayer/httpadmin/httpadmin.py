@@ -70,7 +70,7 @@ class ObHTTPAdmin (httpserver.ObHTTPServer):
             obplayer.Log.log(message, 'debug')
 
     def form_item_selected(self, setting, value):
-        if obplayer.Config.setting(setting, True) == value:
+        if str(obplayer.Config.setting(setting, True)) == str(value):
             return ' selected="selected"'
         else:
             return ''
