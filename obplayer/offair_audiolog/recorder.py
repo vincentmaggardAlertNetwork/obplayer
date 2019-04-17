@@ -53,7 +53,7 @@ class Recorder(obplayer.ObThread):
         self.recording = False
         data = self.get_audio()
         if self.rtl_process != None:
-            self.process.terminate()
+            self.rtl_process.terminate()
         if self.ffmpeg != None:
             self.ffmpeg.terminate()
         if data != b'':
