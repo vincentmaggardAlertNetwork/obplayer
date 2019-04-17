@@ -19,7 +19,7 @@ class Recorder(obplayer.ObThread):
         icecast_bitrate = obplayer.Config.setting('offair_audiolog_icecast_bitrate')
 
         self.rtl_process = subprocess.Popen(['rtl_fm', '-f', fm_feq + 'M', '-M', 'wbfm', '-r', sample_rate], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if self.process.poll() != None:
+        if self.rtl_process.poll() != None:
             obplayer.Log.log("Could not start off-air audio log.\n\
             Make sure your sdr is connected.", 'offair-audiolog')
             self.rtl_process = None
