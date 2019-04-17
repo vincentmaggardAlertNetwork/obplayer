@@ -39,7 +39,7 @@ class Recorder(obplayer.ObThread):
         self.recording = True
         while self.recording:
             try:
-                data = self.process.stdout.read(1)
+                data = self.rtl_process.stdout.read(1)
                 if data != b'':
                     self.audio_data.append(data)
                     self.ffmpeg.stdin.write(data)
