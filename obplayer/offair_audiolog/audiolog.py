@@ -79,7 +79,7 @@ class Oboff_air_AudioLog (object):
         if self.recording == False:
             self.outfile = obplayer.ObData.get_datadir() + '/offair-audiologs/' + time.strftime('%Y-%m-%d_%H:%M:%S') + '.wav'
             self.recorder = Recorder(self.outfile)
-            self.recorder.run()
+            self.recorder.start()
             #self.recorder.join()
             # log that a new recording is being started.
             obplayer.Log.log("starting new off-air audio log", 'offair-audiolog')
