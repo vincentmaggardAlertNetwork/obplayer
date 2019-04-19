@@ -197,6 +197,42 @@ class SyncMediaThread (obplayer.ObThread):
         obplayer.Sync.quit = True
 
 
+class Sync_Alert_Media_Thread(obplayer.ObThread):
+    # def __init__(self):
+    #     # Download first nations alert data from server.
+    #     if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
+    #         pass
+    def run(self):
+        self.running = True
+        while self.running:
+            obplayer.Sync.sync_media()
+            # Sleeping for sync_freq time
+            time.sleep(obplayer.Config.setting('sync_freq'))
+
+    def fetch_alert_media(self, media):
+        postfields = {}
+
+        postfields['id'] = obplayer.Config.setting('sync_device_id')
+        postfields['pw'] = obplayer.Config.setting('sync_device_password')
+        postfields['media_id'] = media['media_id']
+
+        data_request = requests.post(obplayer.Config.setting('sync_url') + "?action=media", data=postfields)
+
+        if data_request.status_code != 200:
+            obplayer.Log.log('unable to download alert media id: {0} at this time'.format(media['media_id']), 'error')
+        else:
+            data = data_request.content
+            try:
+                with open(obplayer.RemoteData.datadir + '/first_nations/demo/' + media['filename'], 'wb') as file:
+                    file.write(data)
+            except FileNotFoundError as e:
+                print('FileNotFoundError')
+
+    def quit(self):
+        self.running = False
+        obplayer.ObThread.stop(self)
+
+
 class ObSync:
 
     def __init__(self):
@@ -583,38 +619,6 @@ class ObSync:
 
         if delete_unused_media == True:
             self.remove_unused_media(obplayer.Config.setting('remote_media'), media_required)
-
-    class Sync_Alert_Media_Thread(obplayer.ObThread):
-        def __init__(self):
-            # Download first nations alert data from server.
-            if obplayer.Config.setting('alerts_broadcast_message_in_first_nations_languages'):
-                pass
-        def run(self):
-            while True:
-                self.sync_alert_media()
-                # Sleeping for sync_freq time
-                time.sleep(obplayer.Config.setting('sync_freq'))
-
-    def fetch_alert_media(self, media):
-        postfields = {}
-
-        postfields['id'] = obplayer.Config.setting('sync_device_id')
-        postfields['pw'] = obplayer.Config.setting('sync_device_password')
-        postfields['media_id'] = media['media_id']
-
-        data_request = requests.post(obplayer.Config.setting('sync_url') + "?action=media", data=postfields)
-
-        if data_request.status_code != 200:
-            obplayer.Log.log('unable to download alert media id: {0} at this time'.format(media['media_id']), 'error')
-        else:
-            data = data_request.content
-            try:
-                with open(obplayer.RemoteData.datadir + '/first_nations/demo/' + media['filename'], 'wb') as file:
-                    file.write(data)
-            except FileNotFoundError as e:
-                print('FileNotFoundError')
-
-
 
     def sync_alert_media(self):
         media_required = obplayer.RemoteData.alert_media_required()
